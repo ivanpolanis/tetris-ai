@@ -11,8 +11,8 @@ class Block:
     def __init__(self, pos: Point):
         self.pos = pos + INIT_POS_OFFSET
         self.primary_color = "#00EE00"
-        # self.secondary_color = "#00FF00"
-        self.surface = pygame.Surface((BLOCK_SIZE*3, BLOCK_SIZE*3))
+        self.secondary_color = "#00FF00"
+        self.surface = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
         self.surface.fill(self.primary_color)
         
 
@@ -40,12 +40,6 @@ class Block:
     #         return False
     #     return True
 
-# class Block(pygame.sprite.Sprite):
-#     def __init__(self, group, pos, color):
-#         super().__init__(group)
-#         self.image= pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
-#         self.image.fill(color)
-#         self.rect = self.image.get_rect(topleft=pos)
 
 
 
@@ -109,22 +103,5 @@ class Tetromino:
     #         new_pos = block.pos + direction
     #         if(block.check_collision(new_pos)):
     #             return True
-        
     #     for block in self.blocks:
     #         pass
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

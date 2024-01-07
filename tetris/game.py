@@ -26,9 +26,8 @@ class Game:
         self.surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         
         # Game logic
-        self.board: Block = [[None]*COLS for _ in range(ROWS)] 
-        for i in range(COLS):
-            self.board[0][i] = Block((0,0))
+        self.board: list = [[None for _ in range(COLS)] for _ in range(ROWS)]
+        
         self.cur_tetromino: Tetromino = Game.get_random_piece()
         self.speed: int = INITIAL_SPEED
 
@@ -86,16 +85,16 @@ class Game:
             if((event.type == pygame.QUIT) or (event.type == pygame.K_ESCAPE)):
                 pygame.quit()
                 sys.exit()
-            # elif(event.type == pygame.K_LEFT):
-            #     self.cur_tetromino.move(MOVE_DIRECTION["LEFT"])
-            # elif(event.type == pygame.K_RIGHT):
-            #     self.cur_tetromino.move(MOVE_DIRECTION["RIGHT"])
-            # elif(event.type == pygame.K_DOWN):
-            #     self.cur_tetromino.move(MOVE_DIRECTION["DOWN"])
-            # elif(event.type == pygame.K_z or event.type == pygame.K_Z):
-            #     self.cur_tetromino.rotate()
-            # elif(event.type == pygame.K_x or event.type == pygame.K_X):
-            #     self.cur_tetromino.rotate()
+            elif(event.type == pygame.K_LEFT):
+                self.cur_tetromino.move(MOVE_DIRECTION["LEFT"])
+            elif(event.type == pygame.K_RIGHT):
+                self.cur_tetromino.move(MOVE_DIRECTION["RIGHT"])
+            elif(event.type == pygame.K_DOWN):
+                self.cur_tetromino.move(MOVE_DIRECTION["DOWN"])
+            elif(event.type == pygame.K_z or event.type == pygame.K_Z):
+                self.cur_tetromino.rotate()
+            elif(event.type == pygame.K_x or event.type == pygame.K_X):
+                self.cur_tetromino.rotate()
 
 
     def run(self):
@@ -106,23 +105,22 @@ class Game:
             self.surface.fill(WINDOW)
             
             #components
-            self.board_ui.run()
+            self.board_ui.run(self.board)
             self.score_ui.run()
             self.preview_ui.run()
-            # self.tetromino_ui(self.cur_tetromino)
-
+            self.tetromino_ui(self.cur_tetromino)
+    
             #update
             self.update()
 
 
-    
     # def check_block(self, pos: Point) -> bool:
     #     return (self.board[pos.x][pos.y] != 0)
 
     def update(self):
         pygame.display.update()
-        # self.cur_tetromino.move(MOVE_DIRECTION["DOWN"])
-        # self.time.wait(200)
+        self.cur_tetromino.move(MOVE_DIRECTION["DOWN"])
+        pygame.time.delay(1000)
 
 
 def game_loop():
