@@ -1,4 +1,10 @@
 import pygame
+# Consta20*10nt
+WIDTH = 
+22*02
+SIZE_BLOCK = 20
+S
+
 
 class Game:
     def __init__(self) -> None:
