@@ -1,8 +1,9 @@
 import pygame
 import tkinter as tk
-from tetromino import Shape, Tetromino, Block
+from tetromino import Tetromino
+from block import Block
 import random
-from settings import COLS, ROWS, INITIAL_SPEED, WINDOW_WIDTH, WINDOW_HEIGHT, SCORE_DATA, MOVE_DIRECTION, WINDOW
+from settings import COLS, ICON_PATH, ROWS, INITIAL_SPEED, WINDOW_WIDTH, WINDOW_HEIGHT, SCORE_DATA, MOVE_DIRECTION, WINDOW, INITIAL_SPEED, ICON_PATH, MUSIC_PATH, FPS, ROTATE_DIRECTION, TETROMINOS
 from ui.board import Board
 from ui.score import Score
 from ui.preview import Preview
@@ -16,7 +17,8 @@ class Game:
         # Data
         self.score: int = 0
         self.level: int = 0 
-        self.lines: int  = 0
+        self.lines: int = 0
+        self.speed: int = 0
         
         
         # Pygame settings
@@ -27,7 +29,6 @@ class Game:
         # Game logic
         self.board: list[list[Block | None]] = [[None] * COLS for _ in range(ROWS)]
         
-        self.cur_tetromino: Tetromino = self.get_random_piece()
         self.speed: int = INITIAL_SPEED
 
         # UI and pygame
@@ -35,16 +36,19 @@ class Game:
         self.board_ui = Board()
         self.score_ui = Score()
         self.preview_ui = Preview()
+        self.sprites = pygame.sprite.Group()
+        
 
-        # icon = pygame.image.load("../assets/tetris.png")
-        # pygame.display.set_icon(icon)
+        self.icon = pygame.image.load(ICON_PATH)
+        pygame.display.set_icon(self.icon)
+
+        
+        self.music = pygame.mixer.music.load(MUSIC_PATH)
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.2)
 
 
-
-    def put_tetromino_block_in_board(self):
-        for block in self.cur_tetromino.blocks:
-            self.board[block.pos.x][block.pos.y] = block.primary_color
-
+        self.cur_tetromino: Tetromino = self.get_random_piece()
 
     def check_lines(self) -> list[int]:
         checked_lines: list[int] = []
@@ -72,11 +76,11 @@ class Game:
 
         if self.lines / 10 > self.level:
             self.level +=1
-        
-    
+            self.speed += 1 #DESPUES SE VERA
+
     def get_random_piece(self) -> Tetromino:
-        type = random.choice(list(Shape))
-        piece = Tetromino(type)
+        shape = random.choice(list(TETROMINOS.keys()))
+        piece = Tetromino(shape, self.sprites)
         return piece
 
     def check_events(self):
@@ -84,16 +88,11 @@ class Game:
             if((event.type == pygame.QUIT) or (event.type == pygame.K_ESCAPE)):
                 pygame.quit()
                 sys.exit()
-            # elif(event.type == pygame.K_LEFT):
-            #     self.cur_tetromino.move(MOVE_DIRECTION["LEFT"])
-            # elif(event.type == pygame.K_RIGHT):
-            #     self.cur_tetromino.move(MOVE_DIRECTION["RIGHT"])
-            # elif(event.type == pygame.K_DOWN):
-            #     self.cur_tetromino.move(MOVE_DIRECTION["DOWN"])
-            # elif(event.type == pygame.K_z or event.type == pygame.K_Z):
-            #     self.cur_tetromino.rotate()
-            # elif(event.type == pygame.K_x or event.type == pygame.K_X):
-            #     self.cur_tetromino.rotate()
+            # elif(event.type == pygame.K_LEFT or event.type == pygame.K_RIGHT or event.type == pygame.K_DOWN):
+            #     self.cur_tetromino.move(MOVE_DIRECTION[event.type])
+            # elif(event.type == pygame.K_z or event.type == pygame.KSCAN_Z or event.type == pygame.K_x or event.type == pygame.KSCAN_X):
+            #     self.cur_tetromino.rotate(ROTATE_DIRECTION[event.type])
+
 
 
     def run(self):
@@ -118,8 +117,11 @@ class Game:
 
     def update(self):
         pygame.display.update()
-        # self.cur_tetromino.move(MOVE_DIRECTION["DOWN"])
-        pygame.time.delay(1000)
+        pygame.display.flip()
+        # self.sprites.update()
+        self.sprites.draw(self.board_ui.surface)
+        self.clock.tick(FPS)
+        pygame.time.delay(self.speed)
 
 
 def game_loop():

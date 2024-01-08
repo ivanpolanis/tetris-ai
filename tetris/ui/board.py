@@ -7,8 +7,6 @@ class Board:
         self.surface = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
         self.display_surface = pygame.display.get_surface()
         self.surface.fill(BACKGROUND)
-        print(self.surface)
-        print(self.display_surface)
 
         
     def draw_grid(self):

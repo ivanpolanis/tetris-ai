@@ -1,9 +1,8 @@
 import pygame
 from os.path import join
 
-vec = pygame.math.Vector2
 
-
+vec = pygame.math.Vector2()
 
 #Game Size
 BLOCK_SIZE = 40
@@ -26,12 +25,21 @@ WINDOW_HEIGHT = GAME_HEIGHT + 2*PADDING
 FONT=join('.','fonts','joystix-monospace.otf')
 FONT_SIZE=18
 
+#icon
+ICON_PATH=join('.','assets','icon.png')
+
+
+#music
+MUSIC_PATH=join('.','sound','music.mp3')
+
+
+
 #Game Logic
 INITIAL_SPEED = 1
 
-MOVE_DIRECTION = {"LEFT": (-1,0), "RIGHT": (1,0), "DOWN": (0,-1)}
+MOVE_DIRECTION = {pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0), pygame.K_DOWN: (0,1)}
 
-ROTATE_DIRECTION = {"clockwise": 1, "counter_clockwise": -1}
+ROTATE_DIRECTION = {pygame.K_z: 1, pygame.KSCAN_Z: 1, pygame.K_x: -1, pygame.KSCAN_X: -1}
 
 SCORE_DATA = {1: 40, 2: 100, 3: 300, 4: 1200 }
 
@@ -42,4 +50,68 @@ WHITE='#FFFFFF'
 GRID_COLOR='#141518'
 
 
-INIT_POS_OFFSET = vec(BLOCK_SIZE) // 2
+INIT_POS_OFFSET = pygame.math.Vector2(COLS//2 -1 , 1)
+
+
+FPS = 60
+
+
+YELLOW = '#f1e60d'
+RED = '#e51b20'
+BLUE = '#204b9b'
+GREEN = '#65b32e'
+PURPLE = '#7b217f'
+CYAN = '#6cc6d9'
+ORANGE = '#f07e13'
+GRAY = '#1C1C1C'
+LINE_COLOR = '#FFFFFF'
+
+
+
+TETROMINOS={
+	'T': {'shape': [(0,0), (-1,0), (1,0), (0,-1)], 'color': join('.','assets','icon.png')},
+	'O': {'shape': [(0,0), (0,-1), (1,0), (1,-1)], 'color': join('.','assets','icon.png')},
+	'J': {'shape': [(0,0), (0,-1), (0,1), (-1,1)], 'color': join('.','assets','icon.png')},
+	'L': {'shape': [(0,0), (0,-1), (0,1), (1,1)], 'color': join('.','assets','icon.png')},
+	'I': {'shape': [(0,0), (0,-1), (0,1), (0,2)], 'color': join('.','assets','icon.png')},
+	'S': {'shape': [(0,0), (-1,0), (0,-1), (1,-1)], 'color': join('.','assets','icon.png')},
+	'Z': {'shape': [(0,0), (1,0), (0,-1), (-1,-1)], 'color': join('.','assets','icon.png')}
+}
+
+
+# class Shape(Enum):
+#     I = {
+#         "primary_color": "#00FFFF",
+#         "secondary_color": "(200, 200, 200)",
+#         "blocks": [Block(Point(0,0), ["primary_color"]), Block(Point(0,1)), Block(Point(0,-1)), Block(Point(0,-2))] 
+#     }
+#     O = {
+#         "primary_color": "#FFFF00",
+#         "secondary_color": "(200, 200, 200)",
+#         "blocks": [Block(Point(0,0)), Block(Point(0,-1)), Block(Point(1,0)), Block(Point(1,-1))] 
+#     }
+#     J = {
+#         "primary_color": "#0000FF",
+#         "secondary_color": "(200, 200, 200)",
+#         "blocks": [Block(Point(0,0)), Block(Point(-1,0)), Block(Point(0,-1)), Block(Point(0,-2))] 
+#     }
+#     L = {
+#         "primary_color": "#FFF500",
+#         "secondary_color": "(200, 200, 200)",
+#         "blocks": [Block(Point(0,0)), Block(Point(1,0)), Block(Point(0,-1)), Block(Point(0,-2))] 
+#     }
+#     S = {
+#         "primary_color": "#00FF00",
+#         "secondary_color": "(200, 200, 200)",
+#         "blocks": [Block(Point(0,0)), Block(Point(-1,0)), Block(Point(0,-1)), Block(Point(1,-1))] 
+#     }
+#     Z = {
+#         "primary_color": "#FF0000",
+#         "secondary_color": "(200, 200, 200)",
+#         "blocks": [Block(Point(0,0)), Block(Point(1,0)), Block(Point(0,-1)), Block(Point(-1,1))] 
+#     }
+#     T = {
+#         "primary_color": "#800080",
+#         "secondary_color": "(200, 200, 200)",
+#         "blocks": [Block(Point(0,0)), Block(Point(1,0)), Block(Point(1,0)), Block(Point(-1,1))] 
+#     }
