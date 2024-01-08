@@ -39,7 +39,7 @@ INITIAL_SPEED = 1
 
 MOVE_DIRECTION = {pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0), pygame.K_DOWN: (0,1)}
 
-ROTATE_DIRECTION = {pygame.K_z: 1, pygame.KSCAN_Z: 1, pygame.K_x: -1, pygame.KSCAN_X: -1}
+ROTATE_DIRECTION = {pygame.K_z: 90, pygame.KSCAN_Z: 90, pygame.K_x: 270, pygame.KSCAN_X: 270}
 
 SCORE_DATA = {1: 40, 2: 100, 3: 300, 4: 1200 }
 

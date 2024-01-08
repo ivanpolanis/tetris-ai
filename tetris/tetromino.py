@@ -1,3 +1,4 @@
+from math import degrees
 import pygame
 from enum import Enum
 from collections import namedtuple
@@ -6,7 +7,7 @@ from block import *
 from pygame import Vector2
 
 class Tetromino(pygame.sprite.Sprite):
-    def __init__(self, shape: str, group: pygame.sprite.Group, board: list[list[bool]], current=False):
+    def __init__(self, shape, group: pygame.sprite.Group, board: list[list[bool]], current=False):
         self.type = shape
         self.blocks = [Block(point, TETROMINOS[shape]["color"], group) for point in TETROMINOS[shape]["shape"]]
         self.landing = False
@@ -17,15 +18,20 @@ class Tetromino(pygame.sprite.Sprite):
     def is_occupied(self, pos: Vector2) -> bool:
         return self.board[pos.x.__int__()][pos.y.__int__()]
 
-
-    def rotate(self) -> None:
+#falta que rote antihorario
+    def rotate(self, direction: int) -> bool:
+        degrees = direction
         pivot_pos = self.blocks[0].pos
-        new_blocks = [block.rotate(pivot_pos) for block in self.blocks]
+        new_blocks = [block.rotate(pivot_pos, degrees) for block in self.blocks]
 
-        if()
+        for pos in new_blocks:
+            if(not ((0 <= pos.x < COLS and 0 <= pos.y < ROWS) and not self.board[pos.x.__int__()][pos.y.__int__()] )):
+                return False
 
-        self.blocks = new_blocks
-        return
+        for i in range(len(new_blocks)):
+            self.blocks[i].pos = new_blocks[i]
+        
+        return True
 
 
     def move(self, direction: Vector2) -> bool:

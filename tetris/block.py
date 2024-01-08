@@ -36,10 +36,10 @@ class Block(pygame.sprite.Sprite):
 
 
 
-    # def rotate(self, pivot_pos):
-    #     translated = self.pos - pivot_pos
-    #     rotated = translated.rotate(90)
-    #     return rotated + pivot_pos
+    def rotate(self, pivot_pos, degrees: int) -> Vector2:
+        translated = self.pos - pivot_pos
+        rotated = translated.rotate(degrees)
+        return rotated + pivot_pos
     
 
     def check_collision(self, pos: Vector2, board: list[list[bool]]) -> bool:
