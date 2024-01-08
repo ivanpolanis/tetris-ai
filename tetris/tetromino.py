@@ -24,7 +24,7 @@ from pygame import Vector2
 class Tetromino:#self.type.value["image"
     def __init__(self, shape, group: pygame.sprite.Group):
         self.type = shape
-        self.blocks = [Block(point, ["#000000"], group) for point in TETROMINOS[shape]["shape"]]
+        self.blocks = [Block(point, TETROMINOS[shape]["color"], group) for point in TETROMINOS[shape]["shape"]]
 
 
     # def rotate(self) -> None:

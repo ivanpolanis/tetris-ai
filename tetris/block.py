@@ -8,12 +8,11 @@ from pygame.math import Vector2
 
 class Block(pygame.sprite.Sprite):
     
-    def __init__(self, pos: tuple, color: list[str], group: pygame.sprite.Group):
+    def __init__(self, pos: tuple, image, group: pygame.sprite.Group):
         super().__init__(group)
         self.group = group
         self.pos = Vector2(pos) + INIT_POS_OFFSET
-        self.image = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
-        self.image.fill('red')
+        self.image = pygame.image.load(image) 
         self.set_rect_pos()
 
 

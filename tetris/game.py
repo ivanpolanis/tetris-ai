@@ -93,8 +93,6 @@ class Game:
             # elif(event.type == pygame.K_z or event.type == pygame.KSCAN_Z or event.type == pygame.K_x or event.type == pygame.KSCAN_X):
             #     self.cur_tetromino.rotate(ROTATE_DIRECTION[event.type])
 
-
-
     def run(self):
         while True:
             self.check_events()

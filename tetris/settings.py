@@ -5,7 +5,7 @@ from os.path import join
 vec = pygame.math.Vector2()
 
 #Game Size
-BLOCK_SIZE = 40
+BLOCK_SIZE = 42
 COLS = 10
 ROWS = 22
 GAME_WIDTH = COLS * BLOCK_SIZE
@@ -69,14 +69,16 @@ LINE_COLOR = '#FFFFFF'
 
 
 TETROMINOS={
-	'T': {'shape': [(0,0), (-1,0), (1,0), (0,-1)], 'color': join('.','assets','icon.png')},
-	'O': {'shape': [(0,0), (0,-1), (1,0), (1,-1)], 'color': join('.','assets','icon.png')},
-	'J': {'shape': [(0,0), (0,-1), (0,1), (-1,1)], 'color': join('.','assets','icon.png')},
-	'L': {'shape': [(0,0), (0,-1), (0,1), (1,1)], 'color': join('.','assets','icon.png')},
-	'I': {'shape': [(0,0), (0,-1), (0,1), (0,2)], 'color': join('.','assets','icon.png')},
-	'S': {'shape': [(0,0), (-1,0), (0,-1), (1,-1)], 'color': join('.','assets','icon.png')},
-	'Z': {'shape': [(0,0), (1,0), (0,-1), (-1,-1)], 'color': join('.','assets','icon.png')}
+	'T': {'shape': [(0,0), (-1,0), (1,0), (0,-1)], 'color': join('.','assets','purple.png')},
+	'O': {'shape': [(0,0), (0,-1), (1,0), (1,-1)], 'color': join('.','assets','yellow.png')},
+	'J': {'shape': [(0,0), (0,-1), (0,1), (-1,1)], 'color': join('.','assets','blue.png')},
+	'L': {'shape': [(0,0), (0,-1), (0,1), (1,1)], 'color': join('.','assets','pink.png')},
+	'I': {'shape': [(0,0), (0,-1), (0,1), (0,2)], 'color': join('.','assets','aqua_green.png')},
+	'S': {'shape': [(0,0), (-1,0), (0,-1), (1,-1)], 'color': join('.','assets','green.png')},
+	'Z': {'shape': [(0,0), (1,0), (0,-1), (-1,-1)], 'color': join('.','assets','red.png')}
 }
+
+
 
 
 # class Shape(Enum):
