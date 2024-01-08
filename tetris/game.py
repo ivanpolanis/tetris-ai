@@ -43,7 +43,7 @@ class Game:
         self.preview_ui = Preview()
         self.sprites = pygame.sprite.Group()
         
-        
+
 
 
         self.icon = pygame.image.load(ICON_PATH)
@@ -55,7 +55,8 @@ class Game:
         pygame.mixer.music.set_volume(0.2)
 
 
-        self.cur_tetromino: Tetromino = self.get_random_piece()
+        self.cur_tetromino: Tetromino = Tetromino(shape = self.get_random_shape(), group = self.sprites, current = True)
+        self.next_tetromino = Tetromino(shape = self.get_random_shape(), group = self.sprites)
 
     def check_lines(self) -> list[int]:
         checked_lines: list[int] = []
@@ -84,39 +85,51 @@ class Game:
         if self.lines / 10 > self.level:
             self.level +=1
             self.speed += 1 #DESPUES SE VERA
+    
+    def check_landing(self): #terminar
+        if(self.cur_tetromino.landing == True):
+            self.next_tetromino.current = True
+            self.cur_tetromino = self.next_tetromino
+            self.next_tetromino = Tetromino(shape = self.get_random_shape(), group = self.sprites)
 
-    def get_random_piece(self) -> Tetromino:
-        shape = random.choice(list(TETROMINOS.keys()))
-        piece = Tetromino(shape, self.sprites)
-        return piece
+
+    def get_random_shape(self):
+        return random.choice(list(TETROMINOS.keys()))
 
     def check_events(self):
         for event in pygame.event.get():
             if((event.type == pygame.QUIT) or (event.type == pygame.K_ESCAPE)):
                 pygame.quit()
                 sys.exit()
-            elif(event.key== pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN):
-                self.cur_tetromino.move(MOVE_DIRECTION[event.key])
-
-
-            # elif(event.key == pygame.K_z or event.type == pygame.KSCAN_Z or event.type == pygame.K_x or event.type == pygame.KSCAN_X):
-            #     self.cur_tetromino.rotate(ROTATE_DIRECTION[event.type])
+            elif(event.type == pygame.KEYDOWN):
+                if(event.key== pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN):
+                    # self.sprites.update()
+                    # self.sprites.draw(self.board_ui.surface)
+                    
+                    # self.board_ui.run()
+                    # pygame.display.update()
+                    # self.clock.tick(FPS)
+                    
+                    self.cur_tetromino.move(MOVE_DIRECTION[event.key])
+                elif(event.key == pygame.K_z or event.type == pygame.KSCAN_Z or event.type == pygame.K_x or event.type == pygame.KSCAN_X):
+                    self.cur_tetromino.rotate(ROTATE_DIRECTION[event.type])
 
 
 
     def input(self):
         keys = pygame.key.get_pressed()
-        print(keys[pygame.K_DOWN])
         if (keys[pygame.K_DOWN]):
-            self.cur_tetrimo
-            
-            
-            # print(pyggame.K_LEFT)
+            self.cur_tetromino.move(Vector2(MOVE_DIRECTION[pygame.K_DOWN]))
+        if (keys[pygame.K_LEFT]):
+            self.cur_tetromino.move(Vector2(MOVE_DIRECTION[pygame.K_LEFT]))
+        if (keys[pygame.K_RIGHT]):
+            self.cur_tetromino.move(Vector2(MOVE_DIRECTION[pygame.K_RIGHT]))
+
 
     def run(self):
         while True:
             self.check_events()
-            self.input()
+            # self.input()
             
             self.sprites.update()
             

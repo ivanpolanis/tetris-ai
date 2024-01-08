@@ -5,10 +5,12 @@ from settings import BLOCK_SIZE, MOVE_DIRECTION, ROTATE_DIRECTION, ROWS, COLS, I
 from block import *
 from pygame import Vector2
 
-class Tetromino:#self.type.value["image"
-    def __init__(self, shape, group: pygame.sprite.Group):
+class Tetromino:
+    def __init__(self, shape, group: pygame.sprite.Group, current=False):
         self.type = shape
         self.blocks = [Block(point, TETROMINOS[shape]["color"], group) for point in TETROMINOS[shape]["shape"]]
+        self.landing = False
+        self.current = current
 
 
     # def rotate(self) -> None:
