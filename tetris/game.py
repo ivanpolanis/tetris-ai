@@ -7,7 +7,7 @@ import random
 from settings import COLS, PADDING, BACKGROUND, ICON_PATH, ROWS, INITIAL_SPEED, WINDOW_WIDTH, WINDOW_HEIGHT, SCORE_DATA, MOVE_DIRECTION, WINDOW, INITIAL_SPEED, ICON_PATH, BLOCK_SIZE,MUSIC_PATH, FPS, ROTATE_DIRECTION, TETROMINOS
 from ui.board import Board
 from ui.score import Score
-# from ui.preview import Preview
+from ui.preview import Preview
 from pygame import Vector2
 import sys
 from os.path import join
@@ -42,8 +42,8 @@ class Game:
         pygame.init()
         self.board_ui = Board()
         self.score_ui = Score()
-        # self.preview_ui = Preview()
-        # self.preview_ui.change_preview('I')
+        self.preview_ui = Preview()
+        self.preview_ui.change_preview('I')
         self.sprites = pygame.sprite.Group()
         
 
