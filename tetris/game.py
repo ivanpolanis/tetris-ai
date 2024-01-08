@@ -29,7 +29,7 @@ class Game:
         self.display_surface = pygame.display.get_surface()
         
         # Game logic
-        self.board: list[list[Block | None]] = [[None] * COLS for _ in range(ROWS)]
+        self.board: list[list[bool]] = [[False] * ROWS for _ in range(COLS)]
         
         self.down_speed: int = INITIAL_SPEED
         self.timers = {
@@ -40,8 +40,9 @@ class Game:
         pygame.init()
         self.board_ui = Board()
         self.score_ui = Score()
-        self.preview_ui = Preview()
+        # self.preview_ui = Preview()
         self.sprites = pygame.sprite.Group()
+
         
 
 
@@ -55,8 +56,8 @@ class Game:
         pygame.mixer.music.set_volume(0.2)
 
 
-        self.cur_tetromino: Tetromino = Tetromino(shape = self.get_random_shape(), group = self.sprites, current = True)
-        self.next_tetromino = Tetromino(shape = self.get_random_shape(), group = self.sprites)
+        self.cur_tetromino: Tetromino = Tetromino(shape = self.get_random_shape(),  group = self.sprites, board = self.board, current = True)
+        self.next_tetromino = Tetromino(shape = self.get_random_shape(),  group = self.sprites, board = self.board)
 
     def check_lines(self) -> list[int]:
         checked_lines: list[int] = []
@@ -69,8 +70,8 @@ class Game:
 
     def delete_line(self, line: int) -> None:
         for i in range(COLS):
-            self.board[line][i] = None
-
+            self.board[line][i] = False
+            #eliminar de sprites
 
     def move_lines(self, line: int) -> None:
         for i in range(line,ROWS-1):
@@ -88,9 +89,11 @@ class Game:
     
     def check_landing(self): #terminar
         if(self.cur_tetromino.landing == True):
+            for block in self.cur_tetromino.blocks:
+                self.board[block.pos.x.__int__()][block.pos.y.__int__()] = True
             self.next_tetromino.current = True
             self.cur_tetromino = self.next_tetromino
-            self.next_tetromino = Tetromino(shape = self.get_random_shape(), group = self.sprites)
+            self.next_tetromino = Tetromino(shape = self.get_random_shape(), group = self.sprites, board = self.board)
 
 
     def get_random_shape(self):
@@ -103,18 +106,9 @@ class Game:
                 sys.exit()
             elif(event.type == pygame.KEYDOWN):
                 if(event.key== pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN):
-                    # self.sprites.update()
-                    # self.sprites.draw(self.board_ui.surface)
-                    
-                    # self.board_ui.run()
-                    # pygame.display.update()
-                    # self.clock.tick(FPS)
-                    
                     self.cur_tetromino.move(MOVE_DIRECTION[event.key])
                 elif(event.key == pygame.K_z or event.type == pygame.KSCAN_Z or event.type == pygame.K_x or event.type == pygame.KSCAN_X):
                     self.cur_tetromino.rotate(ROTATE_DIRECTION[event.type])
-
-
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -132,7 +126,7 @@ class Game:
             # self.input()
             
             self.sprites.update()
-            
+            self.check_landing()
             self.surface.fill(WINDOW)
 
             self.sprites.draw(self.board_ui.surface)
@@ -141,11 +135,11 @@ class Game:
             self.board_ui.run()
             #components
             self.score_ui.run()
-            self.preview_ui.run()
+            # self.preview_ui.run()
             
             #update
             pygame.display.update()
-            pygame.time.delay(self.speed+1000)
+            pygame.time.delay(self.speed+200)
             if(self.cur_tetromino.move(Vector2((0,1)))):
                 print(self.cur_tetromino.blocks[0].pos.y)
             
@@ -155,7 +149,6 @@ class Game:
     # def check_block(self, pos: Point) -> bool:
     #     return (self.board[pos.x][pos.y] != 0)
 
-        
 
 
 if __name__ == "__main__":

@@ -37,6 +37,7 @@ class Score:
             self.display_text((x,y), text)
 
         self.display_surface.blit(self.surface, self.rect)
+        pygame.draw.rect(self.display_surface, LINE_COLOR, self.rect, 2, 2)
 
 
 

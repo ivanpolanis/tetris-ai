@@ -5,33 +5,44 @@ from settings import BLOCK_SIZE, MOVE_DIRECTION, ROTATE_DIRECTION, ROWS, COLS, I
 from block import *
 from pygame import Vector2
 
-class Tetromino:
-    def __init__(self, shape, group: pygame.sprite.Group, current=False):
+class Tetromino(pygame.sprite.Sprite):
+    def __init__(self, shape: str, group: pygame.sprite.Group, board: list[list[bool]], current=False):
         self.type = shape
         self.blocks = [Block(point, TETROMINOS[shape]["color"], group) for point in TETROMINOS[shape]["shape"]]
         self.landing = False
         self.current = current
+        self.board = board
 
 
-    # def rotate(self) -> None:
-    #     pivot_pos = self.blocks[0].pos
-    #     new_blocks = [block.rotate(pivot_pos) for block in self.blocks]
-
-    #     #METER LA LOGICA DE COLISION DE BLOQUES
-        
-    #     self.blocks = new_blocks
-    #     return
+    def is_occupied(self, pos: Vector2) -> bool:
+        return self.board[pos.x.__int__()][pos.y.__int__()]
 
 
-    def move(self, direction: Vector2) -> bool: 
+    def rotate(self) -> None:
+        pivot_pos = self.blocks[0].pos
+        new_blocks = [block.rotate(pivot_pos) for block in self.blocks]
+
+        if()
+
+        self.blocks = new_blocks
+        return
+
+
+    def move(self, direction: Vector2) -> bool:
         for block in self.blocks:
             new_pos = block.pos + direction
-            # if(block.check_collision(new_pos)):
-            #     return False
+            if(not block.check_collision(new_pos, self.board)):
+                continue
+            else:
+                if(direction == Vector2(0,1)):
+                    self.landing = True
+                return False
+
         for block in self.blocks:
-            block.move(Vector2(direction))
+            block.move(Vector2(direction),self.board)
         return True
-    
+
+
     
     
 
