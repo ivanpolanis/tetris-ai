@@ -33,12 +33,11 @@ MUSIC_PATH=join('.','tetris','assets','sound','music.mp3')
 #Speed
 INITIAL_SPEED = 400
 UPDATE_START_SPEED = 200
-MOVE_WAIT_TIME = 200
+MOVE_WAIT_TIME = 50
 ROTATE_WAIT_TIME = 200
 
 #Game Logic
 MOVE_DIRECTION = {pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0), pygame.K_DOWN: (0,1)}
-
 ROTATE_DIRECTION = {"clockwise": 90, "counter_clockwise": 270}
 SCORE_DATA = {1: 40, 2: 100, 3: 300, 4: 1200 }
 
@@ -49,9 +48,8 @@ WHITE='#FFFFFF'
 GRID_COLOR='#141518'
 LINE_COLOR = '#FFFFFF'
 
+#TETROMINOS
 INIT_POS_OFFSET = pygame.math.Vector2(COLUMNS//2 -1 , 1)
-
-
 TETROMINOS={
 	'T': {'shape': [(0,0), (-1,0), (1,0), (0,-1)], 'color': join('.','tetris','assets','purple.png')},
 	'O': {'shape': [(0,0), (0,-1), (1,0), (1,-1)], 'color': join('.','tetris','assets','yellow.png')},
