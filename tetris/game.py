@@ -2,7 +2,7 @@ import pygame
 import tkinter as tk
 from tetromino import Tetromino
 from block import Block
-from timer import Timer
+from timer import Timer # type: ignore
 import random
 from settings import *
 from ui.board import Board
@@ -27,7 +27,7 @@ class Game:
         self.display_surface = pygame.display.get_surface()
         
         # Game logic
-        self.board: list[list[bool]] = [[False] * ROWS for _ in range(COLUMNS)]
+        self.board = [[0 for _ in range(ROWS)] for _ in range(COLUMNS)]
         
         
         # UI and pygame
@@ -58,36 +58,12 @@ class Game:
 		}
         
         self.timers['vertical move'].activate()
-                
-    def _check_lines(self) -> list[int]:
-        checked_lines: list[int] = []
-        for j in range(0,ROWS):
-            valid_line = all(self.board[i][j] for i in range(COLUMNS))
-            if valid_line:
-                checked_lines.append(j)
-        return checked_lines
 
     def _move(self):
         self.cur_tetromino.update()
 
-    def _delete_line(self, line: int) -> None:
-        for i in range(COLUMNS):
-            self.board[i][line] = False
-        sprites_to_kill = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == line * BLOCK_SIZE]
-        for sprite in sprites_to_kill:
-            sprite.kill()
-
-    def _move_lines(self, line: int) -> None:
-        for i in range(line, 0,-1):
-            for j in range(COLUMNS):
-                self.board[j][i] = self.board[j][i-1]
-                self.board[j][i-1] = False
-            sprites_to_recolor = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == (i-1) * BLOCK_SIZE]
-            for sprite in sprites_to_recolor:
-                sprite.pos.y += 1
-
     def _calculate_score(self,lines: int) -> None:
-        self.lines += 1
+        self.lines += lines
         self.score += SCORE_DATA[lines] * (self.level + 1)
 
         if self.lines // ((self.level + 1) * 10) > 0:
@@ -99,34 +75,25 @@ class Game:
             self.timers['vertical move'].duration = self.down_speed
             
         self.score_ui.update_score(score=self.score, level=self.level, lines=self.lines)
-    
-    def _check_completed_lines(self) -> None:
-        full_lines = self._check_lines()
-        qty_lines = len(full_lines)
-        if qty_lines == 0:
-            return 
-        
-        print(full_lines) 
-        for line in full_lines:
-            self._delete_line(line)
-            self._move_lines(line)
-        
-        self._calculate_score(qty_lines)
 
     def _timer_update(self):
         for timer in self.timers.values():
             timer.update()
 
 
-    def _check_landing(self): #terminar
+    def _check_landing(self):
         if(self.cur_tetromino.landing == True):
-            if(self.board[4][0]):
+            if(self.board[COLUMNS//2][0]):
+                pygame.quit()
                 sys.exit(0)
             
             self.speed_up = False
             for block in self.cur_tetromino.blocks:
-                self.board[block.pos.x.__int__()][block.pos.y.__int__()] = True
+                block.current = False
+                self.board[block.pos.x.__int__()][block.pos.y.__int__()] = block #type: ignore
+
             self.cur_tetromino = Tetromino(shape = self._get_next_piece(), group = self.sprites, board = self.board)
+            
 
     def _get_random_shape(self):
         return random.choice(list(TETROMINOS.keys()))
@@ -140,6 +107,7 @@ class Game:
         for event in pygame.event.get():
             if((event.type == pygame.QUIT) or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE)):
                 pygame.quit()
+                sys.exit(0)
 
     def _input(self):
         keys = pygame.key.get_pressed()
@@ -172,13 +140,45 @@ class Game:
             self.down_pressed = False
             self.timers['vertical move'].duration = self.down_speed
 
+    def _check_lines(self) -> list:
+        full_lines = []
+        for row in range(ROWS):
+            if all([self.board[col][row] != 0 for col in range(COLUMNS)]):
+                full_lines.append(row)
+        return full_lines
+
+    def _check_completed_lines(self):
+        full_lines = self._check_lines()
+        
+        if (len(full_lines) > 0):
+            for line in full_lines:
+                for col in range(COLUMNS):        
+                    self.board[col][line].kill()
+
+                for col in self.board:
+                    for block in col:
+                        if isinstance(block, Block) and block.pos.y < line:
+                            block.pos.y += 1
+                
+                self.board = [[0 for _ in range(ROWS)] for _ in range(COLUMNS)]
+                for block in self.sprites:
+                    if block.current == False:
+                        self.board[block.pos.x.__int__()][block.pos.y.__int__()] = block
+            print(full_lines)
+            self._calculate_score(len(full_lines))
+        
+    
+    def print_board(self):
+        for i in range(COLUMNS):
+            print(self.board[i])
+            
     def run(self):
         while True:
             self._check_landing()
             self._check_close()
             self._input()
             self._timer_update()
-            self._check_completed_lines()
+            
             
             self.sprites.update()
             self.surface.fill(WINDOW)
