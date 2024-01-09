@@ -61,33 +61,28 @@ class Game:
                 
     def check_lines(self) -> list[int]:
         checked_lines: list[int] = []
-        for j in range(ROWS-1,0,-1):
+        for j in range(0,ROWS):
             valid_line = all(self.board[i][j] for i in range(COLS))
             if valid_line:
                 checked_lines.append(j)
-        for i in range(len(checked_lines)):
-            checked_lines[i]+=i;
         return checked_lines
 
 
     def delete_line(self, line: int) -> None:
         for i in range(COLS):
             self.board[i][line] = False
-        sprites_a_eliminar = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == line * BLOCK_SIZE]
-        for sprite in sprites_a_eliminar:
+        sprites_to_kill = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == line * BLOCK_SIZE]
+        for sprite in sprites_to_kill:
             sprite.kill()
-
 
     def move_lines(self, line: int) -> None:
         for i in range(line, 0,-1):
             for j in range(COLS):
                 self.board[j][i] = self.board[j][i-1]
                 self.board[j][i-1] = False
-            sprites_a_repintar = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == (i-1) * BLOCK_SIZE]
-            for sprite in sprites_a_repintar:
+            sprites_to_recolor = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == (i-1) * BLOCK_SIZE]
+            for sprite in sprites_to_recolor:
                 sprite.pos.y += 1
-        print(self.board[0][19])
-
 
     def calculate_score(self,lines: int) -> None:
         self.lines += lines
@@ -108,14 +103,10 @@ class Game:
         print(full_lines) 
         for line in full_lines:
             self.delete_line(line)
-            
-        for line in full_lines:
             self.move_lines(line)
         
         self.calculate_score(qty_lines)
         
-    
-    
     def check_landing(self): #terminar
         if(self.cur_tetromino.landing == True):
             for block in self.cur_tetromino.blocks:
@@ -124,8 +115,7 @@ class Game:
 
 
     def get_random_shape(self):
-        return "O"
-        # return random.choice(list(TETROMINOS.keys()))
+        return random.choice(list(TETROMINOS.keys()))
         
     def get_next_piece(self)->str:
         next_shape= self.next_pieces.pop(0)
