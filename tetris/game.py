@@ -21,7 +21,7 @@ class Game:
         # Data
         self.score: int = 0
         self.level: int = 0 
-        self.lines: int = 9
+        self.lines: int = 0
         
         
         # Pygame settings
@@ -171,7 +171,7 @@ class Game:
             pygame.display.update()
 
             if(self.speed_up):
-                pygame.time.delay(self.speed_change - self.speed_change//self.level)
+                pygame.time.delay(self.speed_change - self.speed_change//(self.level+1))
             else:
                 pygame.time.delay(self.speed_change)
             self.clock.tick(FPS)

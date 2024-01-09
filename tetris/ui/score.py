@@ -1,12 +1,8 @@
 import pygame
 from settings import *
-# Constants
-# FONT = pygame.font.Font('../fonts/joystix-monospace.otf', 25)
-# FONT_SIZE=36
-# COLOR=(255, 255, 255)
 
 class Score:
-    def __init__(self):
+    def __init__(self, score:int, level:int, lines:int):
         self.surface = pygame.Surface((SIDEBAR_WIDTH, GAME_HEIGHT*SCORE_HEIGHT_FRACTION - PADDING))
         self.rect = self.surface.get_rect(bottomright=(WINDOW_WIDTH - PADDING, WINDOW_HEIGHT - PADDING))
         self.display_surface = pygame.display.get_surface()
@@ -19,14 +15,14 @@ class Score:
         self.increment_height = self.surface.get_height() / 3
         
         #data
-        self.score = 0
-        self.level = 0
-        self.lines = 0
+        self.score = score
+        self.level = level
+        self.lines = lines
 
-    def update_score(self, lines:int, score:int, level:int):
-        self.lines=lines
+    def update_score(self, score:int, level:int, lines:int):
         self.score=score
         self.level=level
+        self.lines=lines
 
     def display_text(self, pos, text):
         text_surface = self.font.render(f'{text[0]}: {text[1]}', True,WHITE)
