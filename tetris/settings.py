@@ -35,13 +35,13 @@ MUSIC_PATH=join('.','sound','music.mp3')
 #Speed
 FPS = 60
 INITIAL_SPEED = 400
-ANIM_TIME_INTERVAL = 300
-FAST_ANIM_TIME_INTERVAL = 15
-
+UPDATE_START_SPEED = 200
+MOVE_WAIT_TIME = 200
+ROTATE_WAIT_TIME = 200
 
 
 #Game Logic
-MOVE_DIRECTION = {pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0), pygame.K_DOWN: (0,2)}
+MOVE_DIRECTION = {pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0), pygame.K_DOWN: (0,1)}
 
 ROTATE_DIRECTION = {pygame.K_z: 90, pygame.KSCAN_Z: 90, pygame.K_UP: 90 , pygame.K_x: 270, pygame.KSCAN_X: 270}
 
