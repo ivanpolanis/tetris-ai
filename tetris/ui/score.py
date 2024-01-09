@@ -23,6 +23,11 @@ class Score:
         self.level = 0
         self.lines = 0
 
+    def update_score(self, lines:int, score:int, level:int):
+        self.lines=lines
+        self.score=score
+        self.level=level
+
     def display_text(self, pos, text):
         text_surface = self.font.render(f'{text[0]}: {text[1]}', True,WHITE)
         text_rext = text_surface.get_rect(center=pos)

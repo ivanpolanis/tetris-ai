@@ -4,7 +4,7 @@ import tkinter as tk
 from tetromino import Tetromino
 from block import Block
 import random
-from settings import COLS, PADDING, BACKGROUND, ICON_PATH, ROWS, INITIAL_SPEED, WINDOW_WIDTH, WINDOW_HEIGHT, SCORE_DATA, MOVE_DIRECTION, WINDOW, INITIAL_SPEED, ICON_PATH, BLOCK_SIZE,MUSIC_PATH, FPS, ROTATE_DIRECTION, TETROMINOS
+from settings import *
 from ui.board import Board
 from ui.score import Score
 from ui.preview import Preview
@@ -21,7 +21,6 @@ class Game:
         self.score: int = 0
         self.level: int = 0 
         self.lines: int = 0
-        self.speed: int = 0
         
         
         # Pygame settings
@@ -43,10 +42,8 @@ class Game:
         self.board_ui = Board()
         self.score_ui = Score()
         self.preview_ui = Preview()
-        self.preview_ui.change_preview('I')
-        self.sprites = pygame.sprite.Group()
         
-
+        self.sprites = pygame.sprite.Group()
 
 
         self.icon = pygame.image.load(ICON_PATH)
@@ -58,18 +55,18 @@ class Game:
         pygame.mixer.music.set_volume(0.2)
 
 
-        self.cur_tetromino: Tetromino = Tetromino(shape = self.get_random_shape(),  group = self.sprites, board = self.board, current = True)
-        self.next_tetromino = Tetromino(shape = self.get_random_shape(),  group = self.sprites, board = self.board)
+        self.next_pieces= [self.get_random_shape() for shape in range(3)]
+        self.cur_tetromino: Tetromino = Tetromino(shape = self.get_next_piece(),  group = self.sprites, board = self.board, current = True)
         
                 
     def check_lines(self) -> list[int]:
         checked_lines: list[int] = []
-        for j in range(ROWS):
+        for j in range(ROWS-1,0,-1):
             valid_line = all(self.board[i][j] for i in range(COLS))
             if valid_line:
                 checked_lines.append(j)
         for i in range(len(checked_lines)):
-            checked_lines[i]-=i;
+            checked_lines[i]+=i;
         return checked_lines
 
 
@@ -81,53 +78,59 @@ class Game:
             sprite.kill()
 
 
-    def move_lines(self, line: int, qty: int) -> None:
-        for i in range(line-1, 0,-1):
+    def move_lines(self, line: int) -> None:
+        for i in range(line, 0,-1):
             for j in range(COLS):
-                self.board[j][i+qty] = self.board[j][i]
-                self.board[j][i+qty] = False
-        sprites_a_repintar = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == (line-qty) * BLOCK_SIZE]
-        for sprite in sprites_a_repintar:
-            print(sprite.pos.y)
-            sprite.pos.y += qty
+                self.board[j][i] = self.board[j][i-1]
+                self.board[j][i-1] = False
+            sprites_a_repintar = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == (i-1) * BLOCK_SIZE]
+            for sprite in sprites_a_repintar:
+                sprite.pos.y += 1
         print(self.board[0][19])
 
 
-    def calculate_score(self,lines:list[int]) -> None:
-        self.lines += len(lines)
-        self.score += SCORE_DATA[len(lines)] * (self.level + 1)
+    def calculate_score(self,lines: int) -> None:
+        self.lines += lines
+        self.score += SCORE_DATA[lines] * (self.level + 1)
 
-        if self.lines / 10 > self.level:
+        if self.lines % 10 == 0:
             self.level +=1
-            self.speed += 1 #DESPUES SE VERA
+            self.down_speed += 1 #DESPUES SE VERA
+        
+        self.score_ui.update_score(lines = self.lines,score = self.score,level = self.level)
     
     def check(self) -> None:
         full_lines = self.check_lines()
-        print(full_lines)
         qty_lines = len(full_lines)
         if qty_lines == 0:
             return 
         
+        print(full_lines) 
         for line in full_lines:
             self.delete_line(line)
             
         for line in full_lines:
-            self.move_lines(line, qty_lines)
+            self.move_lines(line)
         
+        self.calculate_score(qty_lines)
         
+    
     
     def check_landing(self): #terminar
         if(self.cur_tetromino.landing == True):
             for block in self.cur_tetromino.blocks:
                 self.board[block.pos.x.__int__()][block.pos.y.__int__()] = True
-            self.next_tetromino.current = True
-            self.cur_tetromino = self.next_tetromino
-            self.next_tetromino = Tetromino(shape = self.get_random_shape(), group = self.sprites, board = self.board)
+            self.cur_tetromino = Tetromino(shape = self.get_next_piece(), group = self.sprites, board = self.board)
 
 
     def get_random_shape(self):
-        return "T"
+        return "O"
         # return random.choice(list(TETROMINOS.keys()))
+        
+    def get_next_piece(self)->str:
+        next_shape= self.next_pieces.pop(0)
+        self.next_pieces.append(self.get_random_shape())
+        return next_shape
 
     def check_events(self):
         for event in pygame.event.get():
@@ -154,7 +157,6 @@ class Game:
         while True:
             self.check_landing()
             self.check_events()
-            # self.input()
             
             self.sprites.update()
             self.check()
@@ -163,24 +165,17 @@ class Game:
             self.sprites.draw(self.board_ui.surface)
 
             
-            self.board_ui.run()
             #components
+            self.board_ui.run()
             self.score_ui.run()
-            # self.preview_ui.run()
-            
+            self.preview_ui.run(self.next_pieces)
+
             #update
             pygame.display.update()
-            pygame.time.delay(self.speed+100)
-            if(self.cur_tetromino.move(Vector2((0,1)))):
-                #print(self.cur_tetromino.blocks[0].pos.y)
-                pass
+            pygame.time.delay(round(INITIAL_SPEED/self.down_speed)+150)
+            self.cur_tetromino.update()
+
             self.clock.tick(FPS)
-
-
-    # def check_block(self, pos: Point) -> bool:
-    #     return (self.board[pos.x][pos.y] != 0)
-
-
 
 if __name__ == "__main__":
     game = Game()
