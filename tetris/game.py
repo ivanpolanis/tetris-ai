@@ -91,7 +91,7 @@ class Game:
             for block in self.cur_tetromino.blocks:
                 block.current = False
                 self.board[block.pos.x.__int__()][block.pos.y.__int__()] = block #type: ignore
-
+            self._check_completed_lines()
             self.cur_tetromino = Tetromino(shape = self._get_next_piece(), group = self.sprites, board = self.board)
             
 
@@ -164,7 +164,7 @@ class Game:
                 for block in self.sprites:
                     if block.current == False:
                         self.board[block.pos.x.__int__()][block.pos.y.__int__()] = block
-            print(full_lines)
+                        
             self._calculate_score(len(full_lines))
         
     

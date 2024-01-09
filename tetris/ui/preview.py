@@ -11,7 +11,7 @@ class Preview():
         
         self.piece_images={piece: load(join('.','tetris','assets','tetrominos',f'{piece}.png')).convert_alpha() for piece in TETROMINOS.keys()}
         
-    def change_preview(self, next_pieces):
+    def _change_preview(self, next_pieces):
         for i, piece in enumerate(next_pieces):
             piece_image = self.piece_images[piece]
             x=self.surface.get_width()/2
@@ -21,7 +21,7 @@ class Preview():
 
     def run(self, next_pieces):
         self.surface.fill(BACKGROUND)
-        self.change_preview(next_pieces)
+        self._change_preview(next_pieces)
         self.display_surface.blit(self.surface, self.rect)
         pygame.draw.rect(self.display_surface, LINE_COLOR, self.rect, 2, 2)
 

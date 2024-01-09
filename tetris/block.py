@@ -13,19 +13,19 @@ class Block(pygame.sprite.Sprite):
         self.image = pygame.image.load(image).convert_alpha()
         self.pos = Vector2(pos) + INIT_POS_OFFSET
         self.rect = self.image.get_rect(topleft = self.pos * BLOCK_SIZE)
+        self.current = True
 
 
-
-    def set_rect_pos(self):
+    def _set_rect_pos(self):
         self.rect.topleft = (self.pos.x.__int__() * BLOCK_SIZE,self.pos.y.__int__() * BLOCK_SIZE) 
 
 
     def update(self):
-        self.set_rect_pos()
+        self._set_rect_pos()
 
 
 
-    def move(self, direction: Vector2, board: list[list[bool]]):
+    def move(self, direction: Vector2, board):
         if(not self.check_collision(self.pos + direction, board)):
             self.pos += direction
             return True
