@@ -1,7 +1,5 @@
 import pygame
 from settings import *
-from tetromino import Tetromino
-from block import Block
 from pygame.image import load
 from os.path import join
 
@@ -11,7 +9,7 @@ class Preview():
         self.surface = pygame.Surface((SIDEBAR_WIDTH, GAME_HEIGHT*PREVIEW_HEIGHT_FRACTION));
         self.rect = self.surface.get_rect(topright=(WINDOW_WIDTH - PADDING,PADDING))
         
-        self.piece_images={piece: load(join('.','assets','tetrominos',f'{piece}.png')).convert_alpha() for piece in TETROMINOS.keys()}
+        self.piece_images={piece: load(join('.','tetris','assets','tetrominos',f'{piece}.png')).convert_alpha() for piece in TETROMINOS.keys()}
         
     def change_preview(self, next_pieces):
         for i, piece in enumerate(next_pieces):

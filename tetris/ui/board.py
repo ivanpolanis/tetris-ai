@@ -11,7 +11,7 @@ class Board:
 
         
     def draw_grid(self):
-        for col in range(1,COLS):
+        for col in range(1,COLUMNS):
             x = col*BLOCK_SIZE
             pygame.draw.line(self.surface,GRID_COLOR, (x,0), (x,self.surface.get_height()),1)
 

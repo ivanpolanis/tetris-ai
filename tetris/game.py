@@ -18,8 +18,8 @@ class Game:
         self.score: int = 0
         self.level: int = 0 
         self.lines: int = 0
-        
-        
+
+
         # Pygame settings
         pygame.display.set_caption("Tetris")
         self.clock = pygame.time.Clock()
@@ -27,7 +27,7 @@ class Game:
         self.display_surface = pygame.display.get_surface()
         
         # Game logic
-        self.board: list[list[bool]] = [[False] * ROWS for _ in range(COLS)]
+        self.board: list[list[bool]] = [[False] * ROWS for _ in range(COLUMNS)]
         
         
         # UI and pygame
@@ -45,48 +45,48 @@ class Game:
         pygame.mixer.music.set_volume(0.2)
 
 
-        self.next_pieces= [self.get_random_shape() for shape in range(3)]
-        self.cur_tetromino: Tetromino = Tetromino(shape = self.get_next_piece(),  group = self.sprites, board = self.board, current = True)
+        self.next_pieces= [self._get_random_shape() for shape in range(3)]
+        self.cur_tetromino: Tetromino = Tetromino(shape = self._get_next_piece(),  group = self.sprites, board = self.board, current = True)
         
         self.down_speed = UPDATE_START_SPEED
         self.down_speed_faster = self.down_speed * 0.3
         self.down_pressed = False
         self.timers = {
-			'vertical move': Timer(self.down_speed, True, self.move),
+			'vertical move': Timer(self.down_speed, True, self._move),
 			'horizontal move': Timer(MOVE_WAIT_TIME),
 			'rotate': Timer(ROTATE_WAIT_TIME),
 		}
         
         self.timers['vertical move'].activate()
                 
-    def check_lines(self) -> list[int]:
+    def _check_lines(self) -> list[int]:
         checked_lines: list[int] = []
         for j in range(0,ROWS):
-            valid_line = all(self.board[i][j] for i in range(COLS))
+            valid_line = all(self.board[i][j] for i in range(COLUMNS))
             if valid_line:
                 checked_lines.append(j)
         return checked_lines
 
-    def move(self):
+    def _move(self):
         self.cur_tetromino.update()
 
-    def delete_line(self, line: int) -> None:
-        for i in range(COLS):
+    def _delete_line(self, line: int) -> None:
+        for i in range(COLUMNS):
             self.board[i][line] = False
         sprites_to_kill = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == line * BLOCK_SIZE]
         for sprite in sprites_to_kill:
             sprite.kill()
 
-    def move_lines(self, line: int) -> None:
+    def _move_lines(self, line: int) -> None:
         for i in range(line, 0,-1):
-            for j in range(COLS):
+            for j in range(COLUMNS):
                 self.board[j][i] = self.board[j][i-1]
                 self.board[j][i-1] = False
             sprites_to_recolor = [sprite for sprite in self.sprites.sprites() if sprite.rect.y == (i-1) * BLOCK_SIZE]
             for sprite in sprites_to_recolor:
                 sprite.pos.y += 1
 
-    def calculate_score(self,lines: int) -> None:
+    def _calculate_score(self,lines: int) -> None:
         self.lines += 1
         self.score += SCORE_DATA[lines] * (self.level + 1)
 
@@ -100,25 +100,25 @@ class Game:
             
         self.score_ui.update_score(score=self.score, level=self.level, lines=self.lines)
     
-    def check_completed_lines(self) -> None:
-        full_lines = self.check_lines()
+    def _check_completed_lines(self) -> None:
+        full_lines = self._check_lines()
         qty_lines = len(full_lines)
         if qty_lines == 0:
             return 
         
         print(full_lines) 
         for line in full_lines:
-            self.delete_line(line)
-            self.move_lines(line)
+            self._delete_line(line)
+            self._move_lines(line)
         
-        self.calculate_score(qty_lines)
+        self._calculate_score(qty_lines)
 
-    def timer_update(self):
+    def _timer_update(self):
         for timer in self.timers.values():
             timer.update()
 
 
-    def check_landing(self): #terminar
+    def _check_landing(self): #terminar
         if(self.cur_tetromino.landing == True):
             if(self.board[4][0]):
                 sys.exit(0)
@@ -126,14 +126,14 @@ class Game:
             self.speed_up = False
             for block in self.cur_tetromino.blocks:
                 self.board[block.pos.x.__int__()][block.pos.y.__int__()] = True
-            self.cur_tetromino = Tetromino(shape = self.get_next_piece(), group = self.sprites, board = self.board)
+            self.cur_tetromino = Tetromino(shape = self._get_next_piece(), group = self.sprites, board = self.board)
 
-    def get_random_shape(self):
+    def _get_random_shape(self):
         return random.choice(list(TETROMINOS.keys()))
         
-    def get_next_piece(self)->str:
+    def _get_next_piece(self)->str:
         next_shape= self.next_pieces.pop(0)
-        self.next_pieces.append(self.get_random_shape())
+        self.next_pieces.append(self._get_random_shape())
         return next_shape
 
     def _check_close(self):
@@ -141,7 +141,7 @@ class Game:
             if((event.type == pygame.QUIT) or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE)):
                 pygame.quit()
 
-    def input(self):
+    def _input(self):
         keys = pygame.key.get_pressed()
 
         # checking horizontal movement
@@ -156,11 +156,11 @@ class Game:
         # check for rotation
         if not self.timers['rotate'].active:
             if keys[pygame.K_UP] or keys[pygame.K_z] or keys[pygame.KSCAN_Z]:
-                self.cur_tetromino.rotate(ROTATE_DIRECTION[pygame.K_z])
+                self.cur_tetromino.rotate(ROTATE_DIRECTION["clockwise"])
                 self.timers['rotate'].activate()
     
             if keys[pygame.KSCAN_X] or keys[pygame.K_x]:
-                self.cur_tetromino.rotate(ROTATE_DIRECTION[pygame.K_x])
+                self.cur_tetromino.rotate(ROTATE_DIRECTION["counter_clockwise"])
                 self.timers['rotate'].activate()
 
 		# down speedup
@@ -174,16 +174,16 @@ class Game:
 
     def run(self):
         while True:
-            self.check_landing()
+            self._check_landing()
             self._check_close()
-            self.input()
-            self.timer_update()
-            self.check_completed_lines()
+            self._input()
+            self._timer_update()
+            self._check_completed_lines()
             
             self.sprites.update()
             self.surface.fill(WINDOW)
             self.sprites.draw(self.board_ui.surface)
-            
+
             #components
             self.board_ui.run()
             self.score_ui.run()
@@ -192,6 +192,7 @@ class Game:
             #update
             pygame.display.update()
             self.clock.tick()
+
 
 
 if __name__ == "__main__":

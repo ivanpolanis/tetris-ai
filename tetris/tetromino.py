@@ -2,7 +2,7 @@ from math import degrees
 import pygame
 from enum import Enum
 from collections import namedtuple
-from settings import BLOCK_SIZE, MOVE_DIRECTION, ROTATE_DIRECTION, ROWS, COLS, INIT_POS_OFFSET, TETROMINOS
+from settings import *
 from block import *
 from pygame import Vector2
 

@@ -1,7 +1,7 @@
 import pygame
 from enum import Enum
 from collections import namedtuple
-from settings import BLOCK_SIZE, MOVE_DIRECTION, ROTATE_DIRECTION, ROWS, COLS, INIT_POS_OFFSET
+from settings import *
 from pygame.math import Vector2
 
 
@@ -40,4 +40,4 @@ class Block(pygame.sprite.Sprite):
     
 
     def check_collision(self, pos: Vector2, board: list[list[bool]]) -> bool:
-        return not ((0 <= pos.x.__int__() < COLS and 0 <= pos.y.__int__() < ROWS) and not board[pos.x.__int__()][pos.y.__int__()] )
+        return not ((0 <= pos.x.__int__() < COLUMNS and 0 <= pos.y.__int__() < ROWS) and not board[pos.x.__int__()][pos.y.__int__()] )
