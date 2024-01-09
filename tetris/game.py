@@ -1,3 +1,4 @@
+from multiprocessing.spawn import get_command_line
 from tabnanny import check
 import pygame
 import tkinter as tk
@@ -11,7 +12,7 @@ from ui.preview import Preview
 from pygame import Vector2
 import sys
 from os.path import join
-# from timer import Timer
+
 
 
 
@@ -20,7 +21,7 @@ class Game:
         # Data
         self.score: int = 0
         self.level: int = 0 
-        self.lines: int = 0
+        self.lines: int = 9
         
         
         # Pygame settings
@@ -32,7 +33,6 @@ class Game:
         # Game logic
         self.board: list[list[bool]] = [[False] * ROWS for _ in range(COLS)]
         
-        self.down_speed: int = INITIAL_SPEED
         self.timers = {
             
         }
@@ -40,11 +40,13 @@ class Game:
         # UI and pygame
         pygame.init()
         self.board_ui = Board()
-        self.score_ui = Score()
+        self.score_ui = Score(score=self.score, level=self.level, lines=self.lines)
         self.preview_ui = Preview()
-        
+        self.speed_change = INITIAL_SPEED
+        self.speed_up = False
         self.sprites = pygame.sprite.Group()
 
+        
 
         self.icon = pygame.image.load(ICON_PATH)
         pygame.display.set_icon(self.icon)
@@ -85,14 +87,14 @@ class Game:
                 sprite.pos.y += 1
 
     def calculate_score(self,lines: int) -> None:
-        self.lines += lines
+        self.lines += 10
         self.score += SCORE_DATA[lines] * (self.level + 1)
 
-        if self.lines % 10 == 0:
-            self.level +=1
-            self.down_speed += 1 #DESPUES SE VERA
-        
-        self.score_ui.update_score(lines = self.lines,score = self.score,level = self.level)
+        if self.lines // ((self.level + 1) * 10) > 0:
+            self.level += 1
+            self.speed_change = round(self.speed_change * (0.98-((self.level)*0.0025))**(self.level))
+            
+        self.score_ui.update_score(score=self.score, level=self.level, lines=self.lines)
     
     def check(self) -> None:
         full_lines = self.check_lines()
@@ -109,10 +111,13 @@ class Game:
         
     def check_landing(self): #terminar
         if(self.cur_tetromino.landing == True):
+            if(self.board[4][0]):
+                sys.exit(0)
+            
+            self.speed_up = False
             for block in self.cur_tetromino.blocks:
                 self.board[block.pos.x.__int__()][block.pos.y.__int__()] = True
             self.cur_tetromino = Tetromino(shape = self.get_next_piece(), group = self.sprites, board = self.board)
-
 
     def get_random_shape(self):
         return random.choice(list(TETROMINOS.keys()))
@@ -122,16 +127,20 @@ class Game:
         self.next_pieces.append(self.get_random_shape())
         return next_shape
 
-    def check_events(self):
+    def _check_events(self):
         for event in pygame.event.get():
             if((event.type == pygame.QUIT) or (event.type == pygame.K_ESCAPE)):
                 pygame.quit()
                 sys.exit()
-            elif(event.type == pygame.KEYDOWN):
-                if(event.key== pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN):
+            if(event.type == pygame.KEYDOWN):
+                if(event.key== pygame.K_LEFT or event.key == pygame.K_RIGHT):
                     self.cur_tetromino.move(MOVE_DIRECTION[event.key])
-                elif(event.key == pygame.K_z or event.key == pygame.KSCAN_Z or event.key == pygame.K_x or event.key == pygame.KSCAN_X):
+                elif (event.key == pygame.K_DOWN):
+                    self.speed_up = True
+                elif(event.key == pygame.K_z or event.key == pygame.KSCAN_Z or event.key == pygame.K_x or event.key == pygame.KSCAN_X or event.key == pygame.K_UP):
                     self.cur_tetromino.rotate(ROTATE_DIRECTION[event.key])
+            if (event.type==pygame.KEYUP and event.key==pygame.K_DOWN):
+                self.speed_up = False
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -142,18 +151,16 @@ class Game:
         if (keys[pygame.K_RIGHT]):
             self.cur_tetromino.move(Vector2(MOVE_DIRECTION[pygame.K_RIGHT]))
 
-
     def run(self):
         while True:
+            self.cur_tetromino.update()
             self.check_landing()
-            self.check_events()
+            self._check_events()
+            self.check()
             
             self.sprites.update()
-            self.check()
             self.surface.fill(WINDOW)
-
             self.sprites.draw(self.board_ui.surface)
-
             
             #components
             self.board_ui.run()
@@ -162,10 +169,13 @@ class Game:
 
             #update
             pygame.display.update()
-            pygame.time.delay(round(INITIAL_SPEED/self.down_speed)+150)
-            self.cur_tetromino.update()
 
+            if(self.speed_up):
+                pygame.time.delay(self.speed_change - self.speed_change//self.level)
+            else:
+                pygame.time.delay(self.speed_change)
             self.clock.tick(FPS)
+
 
 if __name__ == "__main__":
     game = Game()
