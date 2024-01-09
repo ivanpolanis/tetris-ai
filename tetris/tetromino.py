@@ -7,7 +7,7 @@ from block import *
 from pygame import Vector2
 
 class Tetromino(pygame.sprite.Sprite):
-    def __init__(self, shape, group: pygame.sprite.Group, board: list[list[bool]], current=False):
+    def __init__(self, shape, group: pygame.sprite.Group, board, current=False):
         self.type = shape
         self.blocks = [Block(point, TETROMINOS[shape]["color"], group) for point in TETROMINOS[shape]["shape"]]
         self.landing = False
@@ -25,7 +25,7 @@ class Tetromino(pygame.sprite.Sprite):
         pivot_pos = self.blocks[0].pos
         new_positions = [block.rotate(pivot_pos, degrees) for block in self.blocks]
         
-        if(self.check_collision(new_positions)):
+        if(self._check_collision(new_positions)):
             return False
 
         for i in range(len(new_positions)):
@@ -35,7 +35,7 @@ class Tetromino(pygame.sprite.Sprite):
 
     def move(self, direction: Vector2) -> bool:
         new_positions = [block.pos + direction for block in self.blocks]
-        if(not self.check_collision(new_positions)):
+        if(not self._check_collision(new_positions)):
             for block in self.blocks:
                 block.move(Vector2(direction),self.board)
             return True
@@ -45,7 +45,7 @@ class Tetromino(pygame.sprite.Sprite):
         return False
 
     #return True if there's collision
-    def check_collision(self, block_positions: list[Vector2]) -> bool:
+    def _check_collision(self, block_positions: list[Vector2]) -> bool:
         return any(map(lambda block, pos: block.check_collision(pos, self.board), self.blocks, block_positions))
 
 

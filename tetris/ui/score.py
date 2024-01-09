@@ -24,7 +24,7 @@ class Score:
         self.level=level
         self.lines=lines
 
-    def display_text(self, pos, text):
+    def _display_text(self, pos, text):
         text_surface = self.font.render(f'{text[0]}: {text[1]}', True,WHITE)
         text_rext = text_surface.get_rect(center=pos)
         self.surface.blit(text_surface, text_rext)
@@ -35,7 +35,7 @@ class Score:
         for i, text in enumerate([('Score', self.score), ('Level', self.level), ('Lines', self.lines)]):
             x = self.surface.get_width() / 2
             y = self.increment_height / 2 + i * self.increment_height
-            self.display_text((x,y), text)
+            self._display_text((x,y), text)
             
         self.display_surface.blit(self.surface, self.rect)
         pygame.draw.rect(self.display_surface, LINE_COLOR, self.rect, 2, 2)
