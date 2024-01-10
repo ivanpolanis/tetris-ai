@@ -1,8 +1,13 @@
-# Tetris
+# Tetris-AI
 
-- Mover los assets a tetris ✅
-- Poner los metodos en privado ✅
-- Reescribir las constantes ✅
-- Arreglar el checklines (no tp👇) ✅
-- 
-- Arreglar en general 
+## Tetris
+
+- Checkeo general
+
+## AI
+
+- Crear una clase que recolecte informacion del board y la informacion de la pieza actual.
+
+- - Agujeros
+- - Lineas a completar
+- - Alturas de las columnas

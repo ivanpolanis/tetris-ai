@@ -1,5 +1,4 @@
 import pygame
-import tkinter as tk
 from tetromino import Tetromino
 from block import Block
 from timer import Timer # type: ignore
@@ -8,9 +7,9 @@ from settings import *
 from ui.board import Board
 from ui.score import Score
 from ui.preview import Preview
+import numpy as np
 from pygame import Vector2
 import sys
-from os.path import join
 
 class Game:
     def __init__(self) -> None:
@@ -68,15 +67,11 @@ class Game:
         for timer in self.timers.values():
             timer.update()
 
-
-
     def _check_game_over(self):
         for block in self.cur_tetromino.blocks:
             if(len(pygame.sprite.spritecollide(block, self.board_sprites, False))>0 ):
                 pygame.quit()
                 sys.exit(0)
-
-
 
     def _check_landing(self):
         if(self.cur_tetromino.landing == True):
@@ -92,7 +87,7 @@ class Game:
         full_lines = self._check_lines()
         if (len(full_lines) > 0):
             for line in full_lines:
-                for col in range(COLUMNS):        
+                for col in range(COLUMNS):
                     self.board[col][line].kill()
                 for col in self.board:
                     for block in col:
@@ -118,15 +113,13 @@ class Game:
 
         if (self.lines // ((self.level + 1) * 10) > 0):
             self.level += 1
-            self.down_speed *= round(self.down_speed * (0.98-((self.level)*0.0025))**(self.level))
+            self.down_speed = round(self.down_speed * (0.98-((self.level)*0.0025))**(self.level))
             self.timers['vertical move'].duration = self.down_speed
             self.down_speed_faster = self.down_speed * 0.3
             
             self.timers['vertical move'].duration = self.down_speed
             
         self.score_ui.update_score(score=self.score, level=self.level, lines=self.lines)
-
-
 
     def _get_next_piece(self)->str:
         next_shape= self.next_pieces.pop(0)
@@ -135,8 +128,6 @@ class Game:
 
     def _get_random_shape(self):
         return random.choice(list(TETROMINOS.keys()))
-
-
 
     def _check_close(self):
         for event in pygame.event.get():
@@ -199,6 +190,14 @@ class Game:
             self.check()
             self.update()
             self.clock.tick()
+    
+    def get_game_information(self):
+        board = np.array(self.board)
+        board = np.where(np.vectorize(lambda x: isinstance(x, Block))(board), 1, board)
+        blocks=np.array([block.pos  for block in self.cur_tetromino.blocks], dtype=np.int8)
+        return board, blocks
+
+   
 
 if __name__ == "__main__":
     game = Game()
