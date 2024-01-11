@@ -2,8 +2,8 @@ from math import degrees
 import pygame
 from enum import Enum
 from collections import namedtuple
-from settings import *
-from block import *
+from tetris.settings import *
+from tetris.block import *
 from pygame import Vector2
 
 class Tetromino(pygame.sprite.Sprite):
@@ -45,7 +45,7 @@ class Tetromino(pygame.sprite.Sprite):
         return False
 
     #return True if there's collision
-    def _check_collision(self, block_positions: list[Vector2]) -> bool:
+    def _check_collision(self, block_positions) -> bool:
         return any(map(lambda block, pos: block.check_collision(pos, self.board), self.blocks, block_positions))
 
 

@@ -1,5 +1,5 @@
 import pygame
-from settings import *
+from tetris.settings import *
 
 class Board:
 
