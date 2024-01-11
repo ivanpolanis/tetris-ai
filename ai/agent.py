@@ -44,9 +44,9 @@ class Agent:
         # return heights
 
     def evaluate_height(self, grid):
-        heights = np.array([np.argmax(grid[col, :] != 0) if np.any(grid[col, :] != 0) else grid.shape[1] for col in range(grid.shape[0])])
+        heights = np.array([np.argmax(grid[:, col] != 0) if np.any(grid[:, col] != 0) else grid.shape[0] for col in range(grid.shape[1])])
         return heights
-
+    #cambie esto
     
     def evaluate_bumpiness(self, heights):
         # Calculate the absolute differences between adjacent elements
@@ -56,19 +56,22 @@ class Agent:
 
         return total_bumpiness
 
-    def evaluate_holes(self, grid):
+    def evaluate_holes(self, grid): #pola perdon pero te lo cambiamos, Si podes hacerlo como lo tenias antes pero que ande estaria bueno
         holes = 0
-        for col in grid:
+        width = len(grid[0])
+
+        for col in range(width):
             isCeiling = False
-            for row in col:
-                if row:
+            for row in range(len(grid)):
+                if grid[row][col]:
                     isCeiling = True
                 elif isCeiling:
-                    holes +=1      
+                    holes += 1
+
         return holes
 
     def evaluate_completed_lines(self, grid):
-        completed_lines = np.sum(np.all(grid, axis=0))
+        completed_lines = np.sum(np.all(grid, axis=1))
         return completed_lines 
 
 

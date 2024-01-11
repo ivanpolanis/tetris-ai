@@ -17,7 +17,7 @@ class Block(pygame.sprite.Sprite):
 
 
     def _set_rect_pos(self):
-        self.rect.topleft = (self.pos.x.__int__() * BLOCK_SIZE,self.pos.y.__int__() * BLOCK_SIZE) 
+        self.rect.topleft = (self.pos.y.__int__() * BLOCK_SIZE, self.pos.x.__int__() * BLOCK_SIZE) 
 
 
     def update(self):
@@ -40,4 +40,4 @@ class Block(pygame.sprite.Sprite):
     
 
     def check_collision(self, pos: Vector2, board) -> bool:
-        return not ((0 <= pos.x.__int__() < COLUMNS and 0 <= pos.y.__int__() < ROWS) and not board[pos.x.__int__()][pos.y.__int__()] )
+        return not ((0 <= pos.x.__int__() < ROWS  and 0 <= pos.y.__int__() < COLUMNS) and not board[pos.x.__int__()][pos.y.__int__()] )

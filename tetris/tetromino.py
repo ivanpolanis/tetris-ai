@@ -40,7 +40,7 @@ class Tetromino(pygame.sprite.Sprite):
                 block.move(Vector2(direction),self.board)
             return True
             
-        if(direction == Vector2(0,1)):
+        if(direction == Vector2(1,0)):
             self.landing = True
         return False
 
@@ -50,5 +50,5 @@ class Tetromino(pygame.sprite.Sprite):
 
 
     def update(self):
-        self.move(Vector2((0,1)))
+        self.move(Vector2((1,0)))
 

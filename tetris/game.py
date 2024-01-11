@@ -27,7 +27,7 @@ class Game:
         self.display_surface = pygame.display.get_surface()
         
         # Game logic
-        self.board = [[0 for _ in range(ROWS)] for _ in range(COLUMNS)]
+        self.board = [[0 for _ in range(COLUMNS)] for _ in range(ROWS)]
         
         
         # UI and pygame
@@ -51,7 +51,7 @@ class Game:
         self.cur_tetromino: Tetromino = Tetromino(shape = self._get_next_piece(),  group = self.sprites, board = self.board, current = True)
         
         self.down_speed = UPDATE_START_SPEED
-        self.down_speed_faster = self.down_speed * 0.3
+        self.down_speed_faster = self.down_speed * 0.25
         self.down_pressed = False
         self.timers = {
 			'vertical move': Timer(self.down_speed, True, self._move),
@@ -84,17 +84,18 @@ class Game:
             self._check_completed_lines()
             self.cur_tetromino = Tetromino(shape = self._get_next_piece(), group = self.sprites, board = self.board)
 
+            
     def _check_completed_lines(self):
         full_lines = self._check_lines()
         if (len(full_lines) > 0):
             for line in full_lines:
-                for col in range(COLUMNS):
-                    self.board[col][line].kill()
-                for col in self.board:
-                    for block in col:
-                        if isinstance(block, Block) and block.pos.y < line:
-                            block.pos.y += 1
-                self.board = [[0 for _ in range(ROWS)] for _ in range(COLUMNS)]
+                for block in self.board[line]:
+                    block.kill()
+                for row in self.board:
+                    for block in row:
+                        if isinstance(block, Block) and block.pos.x < line:
+                            block.pos.x += 1
+                self.board = [[0 for _ in range(COLUMNS)] for _ in range(ROWS)]
                 for block in self.sprites:
                     if block.current == False:
                         self.board[block.pos.x.__int__()][block.pos.y.__int__()] = block
@@ -103,9 +104,11 @@ class Game:
 
     def _check_lines(self) -> list:
         full_lines = []
-        for row in range(ROWS):
-            if all([self.board[col][row] != 0 for col in range(COLUMNS)]):
-                full_lines.append(row)
+        for i,row in enumerate(self.board):
+            if all([block for block in row]):
+                full_lines.append(i)
+                
+        print(full_lines)
         return full_lines
 
     def _calculate_score(self,lines: int) -> None:
@@ -116,7 +119,7 @@ class Game:
             self.level += 1
             self.down_speed = round(self.down_speed * (0.98-((self.level)*0.0025))**(self.level))
             self.timers['vertical move'].duration = self.down_speed
-            self.down_speed_faster = self.down_speed * 0.3
+            self.down_speed_faster = self.down_speed * 0.25
             
             self.timers['vertical move'].duration = self.down_speed
             
@@ -174,6 +177,7 @@ class Game:
         if self.down_pressed and not keys[pygame.K_DOWN]:
             self.down_pressed = False
             self.timers['vertical move'].duration = self.down_speed
+            
 
     def check(self):
         self._check_game_over()

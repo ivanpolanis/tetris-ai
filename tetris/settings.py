@@ -36,7 +36,7 @@ MOVE_WAIT_TIME = 50
 ROTATE_WAIT_TIME = 200
 
 #Game Logic
-MOVE_DIRECTION = {pygame.K_LEFT: (-1,0), pygame.K_RIGHT: (1,0), pygame.K_DOWN: (0,1)}
+MOVE_DIRECTION = {pygame.K_LEFT: (0,-1), pygame.K_RIGHT: (0,1), pygame.K_DOWN: (1,0)}
 ROTATE_DIRECTION = {"clockwise": 90, "counter_clockwise": 270}
 SCORE_DATA = {1: 40, 2: 100, 3: 300, 4: 1200 }
 
@@ -48,13 +48,13 @@ GRID_COLOR='#141518'
 LINE_COLOR = '#FFFFFF'
 
 #TETROMINOS
-INIT_POS_OFFSET = pygame.math.Vector2(COLUMNS//2 -1 , 1)
+INIT_POS_OFFSET = pygame.math.Vector2(0,COLUMNS//2 -1 )
 TETROMINOS={
 	'T': {'shape': [(0,0), (-1,0), (1,0), (0,-1)], 'color': join('.','tetris','assets','purple.png')},
 	'O': {'shape': [(0,0), (0,-1), (1,0), (1,-1)], 'color': join('.','tetris','assets','yellow.png')},
-	'J': {'shape': [(0,0), (0,-1), (0,1), (-1,1)], 'color': join('.','tetris','assets','blue.png')},
-	'L': {'shape': [(0,0), (0,-1), (0,1), (1,1)], 'color': join('.','tetris','assets','pink.png')},
+	'J': {'shape': [(0,0), (-1,0), (1,0), (1,-1)], 'color': join('.','tetris','assets','blue.png')},
+	'L': {'shape': [(0,0), (-1,0), (1,0), (1,1)], 'color': join('.','tetris','assets','pink.png')},
 	'I': {'shape': [(0,0), (0,-1), (0,1), (0,2)], 'color': join('.','tetris','assets','aqua_green.png')},
-	'S': {'shape': [(0,0), (-1,0), (0,-1), (1,-1)], 'color': join('.','tetris','assets','green.png')},
-	'Z': {'shape': [(0,0), (1,0), (0,-1), (-1,-1)], 'color': join('.','tetris','assets','red.png')}
+	'S': {'shape': [(0,0), (0,-1), (-1,0), (-1,1)], 'color': join('.','tetris','assets','green.png')},
+	'Z': {'shape': [(0,0), (0,1), (-1,0), (-1,-1)], 'color': join('.','tetris','assets','red.png')}
 }
