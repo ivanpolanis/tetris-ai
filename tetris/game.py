@@ -1,13 +1,13 @@
 from operator import ne
 import pygame
-from tetromino import Tetromino
-from block import Block
-from timer import Timer # type: ignore
+from tetris.tetromino import Tetromino
+from tetris.block import Block
+from tetris.timer import Timer # type: ignore
 import random
-from settings import *
-from ui.board import Board
-from ui.score import Score
-from ui.preview import Preview
+from tetris.settings import *
+from tetris.ui.board import Board
+from tetris.ui.score import Score
+from tetris.ui.preview import Preview
 import numpy as np
 from pygame import Vector2
 import sys
@@ -195,18 +195,17 @@ class Game:
         pygame.display.update()
         
     def run(self):
-        while True:
-            self.check()
-            self.update()
-            self.clock.tick()
+        self.check()
+        self.update()
+        self.clock.tick()
     
     def get_game_information(self):
         board = np.array(self.board)
         board = np.where(np.vectorize(lambda x: isinstance(x, Block))(board), 1, board)
-        blocks=np.array([block.pos  for block in self.cur_tetromino.blocks], dtype=np.int8)
+        blocks= np.array([block.pos  for block in self.cur_tetromino.blocks], dtype=np.int8)
         return board, blocks
 
-   
+
 
 if __name__ == "__main__":
     game = Game()

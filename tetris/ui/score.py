@@ -1,5 +1,5 @@
 import pygame
-from settings import *
+from tetris.settings import *
 
 class Score:
     def __init__(self, score:int, level:int, lines:int):

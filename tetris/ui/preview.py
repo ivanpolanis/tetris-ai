@@ -1,5 +1,5 @@
 import pygame
-from settings import *
+from tetris.settings import *
 from pygame.image import load
 from os.path import join
 
