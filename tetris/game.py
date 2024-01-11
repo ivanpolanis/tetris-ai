@@ -1,3 +1,4 @@
+from operator import ne
 import pygame
 from tetromino import Tetromino
 from block import Block
@@ -45,7 +46,7 @@ class Game:
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.2)
 
-
+        self.piece_frequency = [1 for _ in range(7)]
         self.next_pieces = [self._get_random_shape() for shape in range(3)]
         self.cur_tetromino: Tetromino = Tetromino(shape = self._get_next_piece(),  group = self.sprites, board = self.board, current = True)
         
@@ -127,7 +128,15 @@ class Game:
         return next_shape
 
     def _get_random_shape(self):
-        return random.choice(list(TETROMINOS.keys()))
+        inverse_probabilities = [1 / frequency for frequency in self.piece_frequency]
+        
+        total_sum = sum(self.piece_frequency)
+        probabilities = [prob  / total_sum for prob in inverse_probabilities]
+        
+        next_piece = random.choices(range(len(probabilities)),weights=probabilities)[0]
+        self.piece_frequency[next_piece] += 1
+
+        return list(TETROMINOS.keys())[next_piece]
 
     def _check_close(self):
         for event in pygame.event.get():
