@@ -1,17 +1,12 @@
 import numpy as np
 from collections import deque
-from settings import *
-
-MAX_MEMORY=100_000
-A=1
-B=2
-C=3
+from ai_settings import *
+from setting import *
 
 class Agent:
     def __init__(self):
         self.number_of_games = 0
         self.memory = deque(maxlen=MAX_MEMORY)
-        # self.
         self.grid=np.zeros((COLUMNS,ROWS), dtype=np.int8)
         # self.positions=
 
@@ -34,7 +29,7 @@ class Agent:
         completed_lines = np.sum(np.all(self.grid, axis=1))
         return completed_lines * 100
 
-    
+
 
     def get_state(self):
         pass
@@ -42,6 +37,11 @@ class Agent:
 
     def get_reward(self) :
         return 1.9
+    
+
+def train():
+    agent=Agent()
+
 
 if __name__ =="__main__":
-    agent=Agent()
+    train()
