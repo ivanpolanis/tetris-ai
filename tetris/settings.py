@@ -50,17 +50,18 @@ SCORE_DATA = {1: 40, 2: 100, 3: 300, 4: 1200 }
 WINDOW='#212121'
 BACKGROUND='#404040'
 WHITE='#FFFFFF'
-GRID_COLOR='#141518'
+GRID_COLOR='#212121'
 LINE_COLOR = '#FFFFFF'
 
 #TETROMINOS
 INIT_POS_OFFSET = pygame.math.Vector2(0,COLUMNS//2 -1 )
 TETROMINOS={
+  'I': {'shape': [(0,0), (0,-1), (0,1), (0,2),(0,3),(0,4),(0,5),(0,-2),(0,-3),(0,-4)], 'color': join('.','tetris','assets','aqua_green.png')},
 	'T': {'shape': [(0,0), (-1,0), (1,0), (0,-1)], 'color': join('.','tetris','assets','purple.png')},
 	'O': {'shape': [(0,0), (0,-1), (1,0), (1,-1)], 'color': join('.','tetris','assets','yellow.png')},
 	'J': {'shape': [(0,0), (-1,0), (1,0), (1,-1)], 'color': join('.','tetris','assets','blue.png')},
 	'L': {'shape': [(0,0), (-1,0), (1,0), (1,1)], 'color': join('.','tetris','assets','pink.png')},
-	'I': {'shape': [(0,0), (0,-1), (0,1), (0,2)], 'color': join('.','tetris','assets','aqua_green.png')},
+	# 'I': {'shape': [(0,0), (0,-1), (0,1), (0,2)], 'color': join('.','tetris','assets','aqua_green.png')},
 	'S': {'shape': [(0,0), (0,-1), (-1,0), (-1,1)], 'color': join('.','tetris','assets','green.png')},
 	'Z': {'shape': [(0,0), (0,1), (-1,0), (-1,-1)], 'color': join('.','tetris','assets','red.png')}
 }

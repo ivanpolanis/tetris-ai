@@ -38,6 +38,8 @@ class Game:
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.2)
         
+
+        
         self._init_game()
         
 
@@ -50,7 +52,7 @@ class Game:
 
     def _check_game_over(self):
         for block in self.cur_tetromino.blocks:
-            if(len(pygame.sprite.spritecollide(block, self.board_sprites, False))>0):
+            if(len(pygame.sprite.spritecollide(block, self.board_sprites, False))>0 and not block.alive):
                 self.game_over = True
 
     def _init_game(self):
@@ -60,6 +62,8 @@ class Game:
         self.lines: int = 0
         self.game_over = False
         
+        self.user_event = pygame.USEREVENT + 0
+        pygame.time.set_timer(self.user_event, 150)
         #Game Logic
         self.board = [[0 for _ in range(COLUMNS)] for _ in range(ROWS)]    
 
@@ -69,7 +73,9 @@ class Game:
         
         self.piece_frequency = [1 for _ in range(7)]
         self.next_pieces = [self._get_random_shape() for _ in range(3)]
-        self.cur_tetromino: Tetromino = Tetromino(shape = self._get_next_piece(),  group = self.sprites, board = self.board, current = True)
+        self.cur_tetromino: Tetromino = Tetromino(self, shape = self._get_next_piece(),  group = self.sprites, board = self.board, current = True)
+        
+        self.anim_trigger = False
         
         
         #Speed
@@ -99,24 +105,27 @@ class Game:
                 self.board_sprites.add(block)
                 self.board[block.pos.x.__int__()][block.pos.y.__int__()] = block #type: ignore
             self._check_completed_lines()
-            self.cur_tetromino = Tetromino(shape = self._get_next_piece(), group = self.sprites, board = self.board)
+            self.cur_tetromino = Tetromino(self, shape = self._get_next_piece(), group = self.sprites, board = self.board)
 
             
     def _check_completed_lines(self):
         full_lines = self._check_lines()
         if (len(full_lines) > 0):
+            self.anim_trigger = True
             for line in full_lines:
-                for block in self.board[line]:
-                    block.kill()
+                for i, block in enumerate(self.board[line]):
+                    block.alive =  False
+                    self.board[line][i] = 0
+                
+
                 for row in self.board:
                     for block in row:
                         if isinstance(block, Block) and block.pos.x < line:
                             block.pos.x += 1
                 self.board = [[0 for _ in range(COLUMNS)] for _ in range(ROWS)]
                 for block in self.sprites:
-                    if block.current == False:
+                    if block.current == False and block.alive:
                         self.board[block.pos.x.__int__()][block.pos.y.__int__()] = block
-                        
             self._calculate_score(len(full_lines))
 
     def _check_lines(self) -> list:
@@ -147,6 +156,7 @@ class Game:
         return next_shape
 
     def _get_random_shape(self):
+        return "I"
         inverse_probabilities = [1 / frequency for frequency in self.piece_frequency]
         
         total_sum = sum(self.piece_frequency)
@@ -158,10 +168,13 @@ class Game:
         return list(TETROMINOS.keys())[next_piece]
 
     def _check_close(self):
+        self.anim_trigger = False
         for event in pygame.event.get():
             if((event.type == pygame.QUIT) or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE)):
                 pygame.quit()
                 sys.exit(0)
+            elif(event.type == self.user_event):
+                self.user_event = True
 
     def _handle_events(self):
         keys = pygame.key.get_pressed()
@@ -215,7 +228,6 @@ class Game:
         pygame.display.update()
         
     def play_step(self, action = None):
-        self.check()
         if action is not None:
             index = action.argmax()
             #[ROTATE, LEFT, RIGHT, DOWN, CHILLING]
@@ -228,7 +240,8 @@ class Game:
             }
             
             actions[index]()
-            
+        
+        self.check()        
         self.update()
         self.clock.tick()
         if self.user_mode is not True:

@@ -12,24 +12,6 @@ import math
 
 class Agent:
     
-    
-    '''Deep Q Learning Agent + Maximin
-
-    Args:
-        state_size (int): Size of the input domain
-        mem_size (int): Size of the replay buffer
-        discount (float): How important is the future rewards compared to the immediate ones [0,1]
-        epsilon (float): Exploration (probability of random values given) value at the start
-        epsilon_min (float): At what epsilon value the agent stops decrementing it
-        epsilon_stop_episode (int): At what episode the agent stops decreasing the exploration variable
-        n_neurons (list(int)): List with the number of neurons in each inner layer
-        activations (list): List with the activations used in each inner layer, as well as the output
-        loss (obj): Loss function
-        optimizer (obj): Otimizer used
-        replay_start_size: Minimum size needed to train
-        
-    '''
-    
     def __init__(self, game = None):
         self.n_games = 0
         self.game= game
@@ -39,14 +21,10 @@ class Agent:
         #TODO: instanciar el trainer y el model
         # self.positions=
 
-    # def evaluate_height(self, grid):
-        # heights = np.array([np.argmax(grid[col, :] != 0) if np.any(grid[col, :] != 0) else grid.shape[0] - 1 for col in range(grid.shape[1])])
-        # return heights
 
     def evaluate_height(self, grid):
         heights = np.array([np.argmax(grid[:, col] != 0) if np.any(grid[:, col] != 0) else grid.shape[0] for col in range(grid.shape[1])])
         return heights
-    #cambie esto
     
     def evaluate_bumpiness(self, heights):
         # Calculate the absolute differences between adjacent elements
@@ -56,7 +34,7 @@ class Agent:
 
         return total_bumpiness
 
-    def evaluate_holes(self, grid): #pola perdon pero te lo cambiamos, Si podes hacerlo como lo tenias antes pero que ande estaria bueno
+    def evaluate_holes(self, grid):
         holes = 0
         width = len(grid[0])
 
@@ -78,6 +56,14 @@ class Agent:
     def get_status(self):
         return (self.game.get_game_information())
 
+
+    # -0.03 for the height multiplier
+    # -7.5 per hole
+    # -3.5 per blockade
+    # +8.0 per clear
+    # +3.0 for each edge touching another block
+    # +2.5 for each edge touching the wall
+    # +5.0 for each edge touching the floor
 
     def get_reward(self, grid): #No confirmo que esto este bien (G. Blasco, lease gei blascou)
         grid, blocks = self.get_status()

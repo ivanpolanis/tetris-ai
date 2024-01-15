@@ -7,11 +7,12 @@ from tetris.block import *
 from pygame import Vector2
 
 class Tetromino(pygame.sprite.Sprite):
-    def __init__(self, shape, group: pygame.sprite.Group, board, current=False):
+    def __init__(self, tetris, shape, group: pygame.sprite.Group, board, current=False):
         self.type = shape
-        self.blocks = [Block(point, TETROMINOS[shape]["color"], group) for point in TETROMINOS[shape]["shape"]]
+        self.blocks = [Block(self, point, TETROMINOS[shape]["color"], group) for point in TETROMINOS[shape]["shape"]]
         self.landing = False
         self.board = board
+        self.tetris = tetris
 
 
     def is_occupied(self, pos: Vector2) -> bool:
