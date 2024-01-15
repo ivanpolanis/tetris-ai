@@ -1,4 +1,3 @@
-from operator import ne
 import pygame
 from tetris.tetromino import Tetromino
 from tetris.block import Block
@@ -12,32 +11,25 @@ import numpy as np
 from pygame import Vector2
 import sys
 
-class Game:
-    def __init__(self) -> None:
-        # Data
-        self.score: int = 0
-        self.level: int = 0 
-        self.lines: int = 0
 
+
+class Game:
+    def __init__(self, user_mode: bool = True) -> None:
+        self.user_mode = user_mode       
 
         # Pygame settings
         pygame.display.set_caption("Tetris")
         self.clock = pygame.time.Clock()
         self.surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        self.display_surface = pygame.display.get_surface()
+        self.display_surface = pygame.display.get_surface()     
         
-        # Game logic
-        self.board = [[0 for _ in range(COLUMNS)] for _ in range(ROWS)]
-        
-        
+
         # UI and pygame
         pygame.init()
         self.board_ui = Board()
-        self.score_ui = Score(score=self.score, level=self.level, lines=self.lines)
         self.preview_ui = Preview()
-        self.sprites = pygame.sprite.Group()
+        self.score_ui = Score()
         
-        self.board_sprites = pygame.sprite.Group()
 
         self.icon = pygame.image.load(ICON_PATH)
         pygame.display.set_icon(self.icon)
@@ -45,11 +37,42 @@ class Game:
         self.music = pygame.mixer.music.load(MUSIC_PATH)
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.2)
+        
+        self._init_game()
+        
 
+    def _move(self):
+        self.cur_tetromino.update()
+
+    def _timer_update(self):
+        for timer in self.timers.values():
+            timer.update()
+
+    def _check_game_over(self):
+        for block in self.cur_tetromino.blocks:
+            if(len(pygame.sprite.spritecollide(block, self.board_sprites, False))>0):
+                self.game_over = True
+
+    def _init_game(self):
+        # Data
+        self.score: int = 0
+        self.level: int = 0 
+        self.lines: int = 0
+        self.game_over = False
+        
+        #Game Logic
+        self.board = [[0 for _ in range(COLUMNS)] for _ in range(ROWS)]    
+
+        #Sprites
+        self.sprites = pygame.sprite.Group()
+        self.board_sprites = pygame.sprite.Group()  
+        
         self.piece_frequency = [1 for _ in range(7)]
-        self.next_pieces = [self._get_random_shape() for shape in range(3)]
+        self.next_pieces = [self._get_random_shape() for _ in range(3)]
         self.cur_tetromino: Tetromino = Tetromino(shape = self._get_next_piece(),  group = self.sprites, board = self.board, current = True)
         
+        
+        #Speed
         self.down_speed = UPDATE_START_SPEED
         self.down_speed_faster = self.down_speed * 0.25
         self.down_pressed = False
@@ -61,18 +84,12 @@ class Game:
         
         self.timers['vertical move'].activate()
 
-    def _move(self):
-        self.cur_tetromino.update()
 
-    def _timer_update(self):
-        for timer in self.timers.values():
-            timer.update()
-
-    def _check_game_over(self):
-        for block in self.cur_tetromino.blocks:
-            if(len(pygame.sprite.spritecollide(block, self.board_sprites, False))>0 ):
-                pygame.quit()
-                sys.exit(0)
+    def reset(self):
+        self._init_game()
+        self.score_ui.update_score(score=self.score, level=self.level, lines=self.lines)
+        self.update()
+        
 
     def _check_landing(self):
         if(self.cur_tetromino.landing == True):
@@ -108,7 +125,6 @@ class Game:
             if all([block for block in row]):
                 full_lines.append(i)
                 
-        print(full_lines)
         return full_lines
 
     def _calculate_score(self,lines: int) -> None:
@@ -147,7 +163,7 @@ class Game:
                 pygame.quit()
                 sys.exit(0)
 
-    def _input(self):
+    def _handle_events(self):
         keys = pygame.key.get_pressed()
 
         # checking horizontal movement
@@ -183,8 +199,8 @@ class Game:
         self._check_game_over()
         self._check_landing()
         self._check_close()
-        self._input()
-
+        self._handle_events()
+        
     def update(self):
         self._timer_update()
         self.sprites.update()
@@ -198,11 +214,37 @@ class Game:
 
         pygame.display.update()
         
-    def run(self):
+    def play_step(self, action = None):
         self.check()
+        if action is not None:
+            index = action.argmax()
+            #[ROTATE, LEFT, RIGHT, DOWN, CHILLING]
+            actions = {
+                0: lambda: self.cur_tetromino.rotate(ROTATE_DIRECTION["clockwise"]),
+                1: lambda: self.cur_tetromino.move(Vector2(-1, 0)),
+                2: lambda: self.cur_tetromino.move(Vector2(1, 0)),
+                3: lambda: self.cur_tetromino.move(Vector2(0, 1)),
+                4: lambda: None
+            }
+            
+            actions[index]()
+            
         self.update()
         self.clock.tick()
-    
+        if self.user_mode is not True:
+            return self.get_game_information()
+
+
+    def run(self):
+        while(True):
+            self.play_step()
+            if self.game_over: 
+                pygame.quit()
+                sys.exit(0)
+
+
+
+
     def get_game_information(self):
         board = np.array(self.board)
         board = np.where(np.vectorize(lambda x: isinstance(x, Block))(board), 1, board)

@@ -3,6 +3,11 @@ from os.path import join
 
 vec = pygame.math.Vector2()
 
+#Modes
+
+MODE = {"USER": 1, "AI": 2}
+CURRRENT_MODE = MODE["USER"]
+
 #Game Size
 BLOCK_SIZE = 42
 COLUMNS = 10
@@ -14,6 +19,7 @@ GAME_HEIGHT = (ROWS) * BLOCK_SIZE
 SIDEBAR_WIDTH = 200
 PREVIEW_HEIGHT_FRACTION = 0.7
 SCORE_HEIGHT_FRACTION = 0.3
+
 
 #Window
 PADDING = 20

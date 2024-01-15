@@ -101,7 +101,7 @@ class Agent:
             mini_sample = self.memory
         
         states, actions, rewards, next_states = zip(*mini_sample)
-        self.trainer.train_step(states, actions, rewards, next_states)
+        # self.trainer.train(states, actions, rewards, next_states)
 
 
 
