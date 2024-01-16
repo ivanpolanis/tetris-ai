@@ -257,6 +257,8 @@ class Game:
         lines_cleared = self._evaluate_completed_lines(board)
         return np.array([lines_cleared, holes, bumpiness, heights.sum()]) #Despues vemos si es Float o Int
 
+
+
     def placeholder(self, data): #mateo ponele nombre
         # Rotamos la pieza
         for i in range(data[1] - 1):
@@ -328,19 +330,25 @@ class Game:
         pygame.display.update()
 
 
-    def play_step(self):
-
-        states = list(self.get_next_states().keys())[0]
+    def play_step(self, move):
         pygame.time.delay(100)
-        self.check()        
-        if states:
-            self.placeholder(states)
+        self.check()
+        self.placeholder(move)
         self.update()
         
-        if self.user_mode is not True:
-            # return self.get_game_information()
-            pass
-        
+        return self.get_reward(), self.game_over
+
+
+
+
+    def get_reward(self): #No confirmo que esto este bien (G. Blasco, lease gei blascou)
+        heights = self._evaluate_height(self.board)
+        bumpiness = self._evaluate_bumpiness(heights)
+        holes = self._evaluate_holes(self.board)
+        completed_lines = self._evaluate_completed_lines(self.board)
+        return LINES_COEF * completed_lines + HEIGHTS_COEF * heights.sum() + HOLES_COEF * holes + BUMPINESS_COEF * bumpiness #CORREGIR
+
+
 
     def run(self):
         while(True):

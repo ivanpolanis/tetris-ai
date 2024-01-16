@@ -37,13 +37,6 @@ class Agent:
     # +2.5 for each edge touching the wall
     # +5.0 for each edge touching the floor
 
-    def get_reward(self, grid): #No confirmo que esto este bien (G. Blasco, lease gei blascou)
-        grid, blocks = self.get_status()
-        heights = self.evaluate_height(grid)
-        bumpiness = self.evaluate_bumpiness(heights)
-        holes = self.evaluate_holes(grid)
-        completed_lines = self.evaluate_completed_lines(grid)
-        return LINES_COEF * completed_lines + HEIGHTS_COEF * heights.sum() + HOLES_COEF * holes + BUMPINESS_COEF * bumpiness
 
 
     def remember(self, status, action, reward, next_status):
