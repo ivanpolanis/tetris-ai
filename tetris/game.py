@@ -241,7 +241,6 @@ class Game:
         return states
 
 
-
     def store(self, cur_piece, pos):
         board = np.array(self.board)
         board = np.where(np.vectorize(lambda x: isinstance(x, Block))(board), 1, board)
@@ -269,7 +268,8 @@ class Game:
 
 
     def _evaluate_height(self, board):
-        heights = np.array([np.argmax(board[:, col] != 0) if np.any(board[:, col] != 0) else board.shape[0] for col in range(board.shape[1])])
+        print(f"\n\n{board}")
+        heights = ROWS - np.array([np.argmax(board[:, col] != 0) if np.any(board[:, col] != 0) else board.shape[0] for col in range(board.shape[1])])
         return heights
     
     def _evaluate_bumpiness(self, heights):

@@ -58,7 +58,7 @@ INIT_POS_OFFSET = pygame.math.Vector2(0,COLUMNS//2 -1 )
 TETROMINOS={
   # 'I': {'shape': [(0,0), (0,-1), (0,1), (0,2),(0,3),(0,4),(0,-2),(0,-3),(0,-4)], 'color': join('.','tetris','assets','aqua_green.png')},
 	'T': {'shape': [(0,0), (-1,0), (1,0), (0,-1)], 'color': join('.','tetris','assets','purple.png')},
-	'O': {'shape': [(0,0), (0,-1), (1,0), (1,-1)], 'color': join('.','tetris','assets','yellow.png')},
+	'O': {'shape': [(0,0), (-1,0), (0,1), (-1,1)], 'color': join('.','tetris','assets','yellow.png')},
 	'J': {'shape': [(0,0), (-1,0), (1,0), (1,-1)], 'color': join('.','tetris','assets','blue.png')},
 	'L': {'shape': [(0,0), (-1,0), (1,0), (1,1)], 'color': join('.','tetris','assets','pink.png')},
 	'I': {'shape': [(0,0), (0,-1), (0,1), (0,2)], 'color': join('.','tetris','assets','aqua_green.png')},

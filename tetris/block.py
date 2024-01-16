@@ -70,4 +70,4 @@ class Block(pygame.sprite.Sprite):
     
 
     def check_collision(self, pos: Vector2, board) -> bool:
-        return not ((0 <= pos.x.__int__() < ROWS  and 0 <= pos.y.__int__() < COLUMNS) and not board[pos.x.__int__()][pos.y.__int__()] )
+        return not (( pos.x.__int__() < ROWS  and 0 <= pos.y.__int__() < COLUMNS) and not board[pos.x.__int__()][pos.y.__int__()] )
