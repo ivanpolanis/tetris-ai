@@ -53,7 +53,7 @@ class Agent:
         return completed_lines 
 
 
-    def get_status(self):
+    def get_status(self): # Mal
         return (self.game.get_game_information())
 
 
@@ -71,7 +71,7 @@ class Agent:
         bumpiness = self.evaluate_bumpiness(heights)
         holes = self.evaluate_holes(grid)
         completed_lines = self.evaluate_completed_lines(grid)
-        return LINES_COEF * completed_lines + HEIGHTS_COEF * heights + HOLES_COEF * holes + BUMPINESS_COEF * bumpiness
+        return LINES_COEF * completed_lines + HEIGHTS_COEF * heights.sum() + HOLES_COEF * holes + BUMPINESS_COEF * bumpiness
 
 
     def remember(self, status, action, reward, next_status):

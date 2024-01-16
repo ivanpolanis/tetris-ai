@@ -204,6 +204,12 @@ class Game:
             self.down_pressed = False
             self.timers['vertical move'].duration = self.down_speed
             
+            
+    def get_next_states(self):
+        pass
+
+
+
 
     def check(self):
         self._check_game_over()
@@ -244,7 +250,7 @@ class Game:
         self.clock.tick()
         if self.user_mode is not True:
             return self.get_game_information()
-
+        
 
     def run(self):
         while(True):
