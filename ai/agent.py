@@ -22,35 +22,7 @@ class Agent:
         # self.positions=
 
 
-    def evaluate_height(self, grid):
-        heights = np.array([np.argmax(grid[:, col] != 0) if np.any(grid[:, col] != 0) else grid.shape[0] for col in range(grid.shape[1])])
-        return heights
-    
-    def evaluate_bumpiness(self, heights):
-        # Calculate the absolute differences between adjacent elements
-        height_diffs = np.abs(heights[:-1] - heights[1:])
-        # Sum up the absolute differences to get the total bumpiness
-        total_bumpiness = np.sum(height_diffs)
-
-        return total_bumpiness
-
-    def evaluate_holes(self, grid):
-        holes = 0
-        width = len(grid[0])
-
-        for col in range(width):
-            isCeiling = False
-            for row in range(len(grid)):
-                if grid[row][col]:
-                    isCeiling = True
-                elif isCeiling:
-                    holes += 1
-
-        return holes
-
-    def evaluate_completed_lines(self, grid):
-        completed_lines = np.sum(np.all(grid, axis=1))
-        return completed_lines 
+   
 
 
     def get_status(self): # Mal

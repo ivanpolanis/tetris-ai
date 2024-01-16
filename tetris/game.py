@@ -1,8 +1,11 @@
+from unittest.main import MAIN_EXAMPLES
 import pygame
+# import torch
+import copy
+import random
 from tetris.tetromino import Tetromino
 from tetris.block import Block
 from tetris.timer import Timer # type: ignore
-import random
 from tetris.settings import *
 from tetris.ui.board import Board
 from tetris.ui.score import Score
@@ -198,16 +201,62 @@ class Game:
 		# down speedup
         if not self.down_pressed and keys[pygame.K_DOWN]:
             self.down_pressed = True
-            self.timers['vertical move'].duration = self.down_speed_faster
+            self.timers['vertical move'].duration = self.down_speed_faster  # type: ignore
 
         if self.down_pressed and not keys[pygame.K_DOWN]:
             self.down_pressed = False
             self.timers['vertical move'].duration = self.down_speed
-            
-            
-    def get_next_states(self):
-        pass
 
+
+
+
+    def get_next_states(self):
+        states = {}
+        piece_id = self.cur_tetromino.type
+        cur_piece: Tetromino = self.cur_tetromino
+        num_rotations: int = 4
+        if piece_id == "O":  # O piece
+            num_rotations = 1
+        elif ["S","Z","I"].__contains__(piece_id):
+            num_rotations = 2
+
+        for rotation in range(num_rotations):            
+            min_y = int(min([block.pos.y for block in cur_piece.blocks]))
+            max_y = int(max([block.pos.y for block in cur_piece.blocks]))
+
+            valid_ys = COLUMNS - int(max_y - min_y)
+
+            for y in range(-min_y, COLUMNS - max_y):
+                pos = Vector2(0, y)
+                positions = [block.pos + pos for block in cur_piece.blocks]
+                while not cur_piece._check_collision(positions):
+                    pos.x += 1
+                    positions = [block.pos + Vector2(pos.x,y) for block in cur_piece.blocks]
+                pos.x -= 1
+                board = self.store(cur_piece, pos)
+                states[(y, rotation)] = self.get_state_properties(board)
+            cur_piece.rotate(ROTATE_DIRECTION["clockwise"]) #cambiar
+        cur_piece.rotate(ROTATE_DIRECTION["clockwise"])
+        print(f"\n\n{states}")
+        return states
+
+
+
+    def store(self, cur_piece, pos):
+        board = np.array(self.board)
+        board = np.where(np.vectorize(lambda x: isinstance(x, Block))(board), 1, board)
+        for block in cur_piece.blocks:
+            board[int(block.pos.x + pos.x), int(block.pos.y + pos.y)] = 1
+        return board
+
+
+
+    def get_state_properties(self, board):
+        heights = self._evaluate_height(board)
+        bumpiness = self._evaluate_bumpiness(heights)
+        holes = self._evaluate_holes(board)
+        lines_cleared = self._evaluate_completed_lines(board)
+        return np.array([lines_cleared, holes, bumpiness, heights.sum()]) #Despues vemos si es Float o Int
 
 
 
@@ -216,7 +265,42 @@ class Game:
         self._check_landing()
         self._check_close()
         self._handle_events()
-        
+    
+
+
+    def _evaluate_height(self, board):
+        heights = np.array([np.argmax(board[:, col] != 0) if np.any(board[:, col] != 0) else board.shape[0] for col in range(board.shape[1])])
+        return heights
+    
+    def _evaluate_bumpiness(self, heights):
+        # Calculate the absolute differences between adjacent elements
+        height_diffs = np.abs(heights[:-1] - heights[1:])
+        # Sum up the absolute differences to get the total bumpiness
+        total_bumpiness = np.sum(height_diffs)
+
+        return total_bumpiness
+
+    def _evaluate_holes(self, board):
+        holes = 0
+        width = len(board[0])
+
+        for col in range(width):
+            isCeiling = False
+            for row in range(len(board)):
+                if board[row][col]:
+                    isCeiling = True
+                elif isCeiling:
+                    holes += 1
+
+        return holes
+
+    def _evaluate_completed_lines(self, board):
+        completed_lines = np.sum(np.all(board, axis=1))
+        return completed_lines 
+
+
+
+
     def update(self):
         self._timer_update()
         self.clock.tick(240)
@@ -230,26 +314,17 @@ class Game:
         self.preview_ui.run(self.next_pieces)
 
         pygame.display.update()
-        
-    def play_step(self, action = None):
-        if action is not None:
-            index = action.argmax()
-            #[ROTATE, LEFT, RIGHT, DOWN, CHILLING]
-            actions = {
-                0: lambda: self.cur_tetromino.rotate(ROTATE_DIRECTION["clockwise"]),
-                1: lambda: self.cur_tetromino.move(Vector2(-1, 0)),
-                2: lambda: self.cur_tetromino.move(Vector2(1, 0)),
-                3: lambda: self.cur_tetromino.move(Vector2(0, 1)),
-                4: lambda: None
-            }
-            
-            actions[index]()
-        
+
+
+    def play_step(self):
+
+        self.get_next_states()
         self.check()        
         self.update()
         self.clock.tick()
         if self.user_mode is not True:
-            return self.get_game_information()
+            # return self.get_game_information()
+            pass
         
 
     def run(self):
@@ -261,12 +336,6 @@ class Game:
 
 
 
-
-    def get_game_information(self):
-        board = np.array(self.board)
-        board = np.where(np.vectorize(lambda x: isinstance(x, Block))(board), 1, board)
-        blocks= np.array([block.pos  for block in self.cur_tetromino.blocks], dtype=np.int8)
-        return board, blocks
 
 
 
