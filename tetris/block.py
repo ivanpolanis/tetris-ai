@@ -21,22 +21,24 @@ class Block(pygame.sprite.Sprite):
         self.sfx_image = self.image.copy()
         self.sfx_image.set_alpha(110)
         self.sfx_speed = random.uniform(0.2, 0.6)
-        self.sfx_cycles = random.randrange(20, 30)
+        self.sfx_cycles = random.randrange(6, 8)
         self.cycle_counter = 0
 
     def sfx_end_time(self):
-        self.cycle_counter += 1
-        if self.cycle_counter > self.sfx_cycles:
-            self.cycle_counter = 0
-            return True
+        if self.tetromino.tetris.anim_trigger:
+            self.cycle_counter += 1
+            if self.cycle_counter > self.sfx_cycles:
+                self.cycle_counter = 0
+                return True
 
     def sfx_run(self):
         self.image = self.sfx_image
-        self.pos.x = max(self.pos.x - self.sfx_speed, 1)
+        self.pos.x -= self.sfx_speed
         self.image = pygame.transform.rotate(self.image, pygame.time.get_ticks() * self.sfx_speed)
 
     def is_alive(self):
         if not self.alive:
+
             if not self.sfx_end_time():
                 self.sfx_run()
             else:

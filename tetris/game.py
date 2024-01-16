@@ -33,12 +33,10 @@ class Game:
 
         self.icon = pygame.image.load(ICON_PATH)
         pygame.display.set_icon(self.icon)
-
+        
         self.music = pygame.mixer.music.load(MUSIC_PATH)
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.2)
-        
-
         
         self._init_game()
         
@@ -52,7 +50,7 @@ class Game:
 
     def _check_game_over(self):
         for block in self.cur_tetromino.blocks:
-            if(len(pygame.sprite.spritecollide(block, self.board_sprites, False))>0 and not block.alive):
+            if(len(pygame.sprite.spritecollide(block, self.board_sprites, False))>0 and block.alive):
                 self.game_over = True
 
     def _init_game(self):
@@ -111,9 +109,9 @@ class Game:
     def _check_completed_lines(self):
         full_lines = self._check_lines()
         if (len(full_lines) > 0):
-            self.anim_trigger = True
             for line in full_lines:
                 for i, block in enumerate(self.board[line]):
+                    block.remove(self.board_sprites)
                     block.alive =  False
                     self.board[line][i] = 0
                 
@@ -156,7 +154,6 @@ class Game:
         return next_shape
 
     def _get_random_shape(self):
-        return "I"
         inverse_probabilities = [1 / frequency for frequency in self.piece_frequency]
         
         total_sum = sum(self.piece_frequency)
@@ -174,7 +171,7 @@ class Game:
                 pygame.quit()
                 sys.exit(0)
             elif(event.type == self.user_event):
-                self.user_event = True
+                self.anim_trigger = True
 
     def _handle_events(self):
         keys = pygame.key.get_pressed()
@@ -216,6 +213,7 @@ class Game:
         
     def update(self):
         self._timer_update()
+        self.clock.tick(240)
         self.sprites.update()
         self.surface.fill(WINDOW)
         self.sprites.draw(self.board_ui.surface)
