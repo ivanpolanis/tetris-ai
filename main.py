@@ -2,6 +2,7 @@ from tetris.game import Game
 # from ai.agent import Agent
 # import numpy as np
 # import pygame
+from ai.agent import train
 
 def main():
     # agent=Agent()
@@ -33,10 +34,11 @@ def main():
     # print((matrix.T.shape[0]-agent.evaluate_height(matrix.T)).sum())
     # print(agent.evaluate_completed_lines(matrix.T))
     # print(agent.evaluate_holes(matrix.T))
-    game=Game()
-    # while True:
-    #     game.run()
-    game.run()
+    # game=Game()
+    # # while True:
+    # #     game.run()
+    # game.run()
+    train()
 
 
 if (__name__=="__main__"):

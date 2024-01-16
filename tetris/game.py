@@ -14,6 +14,8 @@ import numpy as np
 from pygame import Vector2
 import sys
 
+from ai.ai_settings import *
+
 
 
 class Game:
@@ -251,6 +253,8 @@ class Game:
 
 
     def get_state_properties(self, board):
+        board = np.array(self.board)
+        board = np.where(np.vectorize(lambda x: isinstance(x, Block) or x==1)(board), 1, board)
         heights = self._evaluate_height(board)
         bumpiness = self._evaluate_bumpiness(heights)
         holes = self._evaluate_holes(board)
@@ -259,7 +263,7 @@ class Game:
 
 
 
-    def placeholder(self, data): #mateo ponele nombre
+    def play_move(self, data): #mateo ponele nombre
         # Rotamos la pieza
         for i in range(data[1] - 1):
             self.cur_tetromino.rotate(ROTATE_DIRECTION["clockwise"])
@@ -270,15 +274,13 @@ class Game:
         
         self._check_landing()
 
-        
-
 
 
     def check(self):
         self._check_game_over()
         # self._check_landing()
         self._check_close()
-        self._handle_events()
+        # self._handle_events()
     
 
 
@@ -330,10 +332,10 @@ class Game:
         pygame.display.update()
 
 
-    def play_step(self, move):
-        pygame.time.delay(100)
+    def play_step(self, move=(0,0)):
+        
         self.check()
-        self.placeholder(move)
+        self.play_move(move)
         self.update()
         
         return self.get_reward(), self.game_over
@@ -342,21 +344,23 @@ class Game:
 
 
     def get_reward(self): #No confirmo que esto este bien (G. Blasco, lease gei blascou)
-        heights = self._evaluate_height(self.board)
+        board = np.array(self.board)
+        board = np.where(np.vectorize(lambda x: isinstance(x, Block))(board), 1, board)
+        heights = self._evaluate_height(board)
         bumpiness = self._evaluate_bumpiness(heights)
-        holes = self._evaluate_holes(self.board)
-        completed_lines = self._evaluate_completed_lines(self.board)
+        holes = self._evaluate_holes(board)
+        completed_lines = self._evaluate_completed_lines(board)
         return LINES_COEF * completed_lines + HEIGHTS_COEF * heights.sum() + HOLES_COEF * holes + BUMPINESS_COEF * bumpiness #CORREGIR
 
 
 
-    def run(self):
-        while(True):
-            self.play_step()
-            if self.game_over: 
-                pygame.time.delay(10000)
-                pygame.quit()
-                sys.exit(0)
+    # def run(self):
+    #     while(True):
+    #         self.play_step()
+            # if self.game_over: 
+            #     pygame.time.delay(10000)
+            #     pygame.quit()
+            #     sys.exit(0)
 
 
 
