@@ -59,7 +59,8 @@ class Block(pygame.sprite.Sprite):
         if(not self.check_collision(self.pos + direction, board)):
             self.pos += direction
             return True
-        self.pos += direction
+        
+        return False
 
 
 
@@ -70,4 +71,4 @@ class Block(pygame.sprite.Sprite):
     
 
     def check_collision(self, pos: Vector2, board) -> bool:
-        return not (( pos.x.__int__() < ROWS  and 0 <= pos.y.__int__() < COLUMNS) and not board[pos.x.__int__()][pos.y.__int__()] )
+        return not (( pos.x.__int__() < ROWS  and 0 <= pos.y.__int__() < COLUMNS) and not board[max(pos.x.__int__(),0)][pos.y.__int__()] )

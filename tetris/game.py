@@ -39,7 +39,7 @@ class Game:
         
         self.music = pygame.mixer.music.load(MUSIC_PATH)
         pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.set_volume(0)
         
         self._init_game()
         
@@ -237,7 +237,7 @@ class Game:
                 states[(y, rotation)] = self.get_state_properties(board)
             cur_piece.rotate(ROTATE_DIRECTION["clockwise"]) #cambiar
         cur_piece.rotate(ROTATE_DIRECTION["clockwise"])
-        print(f"\n\n{states}")
+        
         return states
 
 
@@ -257,18 +257,30 @@ class Game:
         lines_cleared = self._evaluate_completed_lines(board)
         return np.array([lines_cleared, holes, bumpiness, heights.sum()]) #Despues vemos si es Float o Int
 
+    def placeholder(self, data): #mateo ponele nombre
+        # Rotamos la pieza
+        for i in range(data[1] - 1):
+            self.cur_tetromino.rotate(ROTATE_DIRECTION["clockwise"])
+        
+        self.cur_tetromino.move(Vector2(0,data[0]))
+        while self.cur_tetromino.move(Vector2(1,0)):
+            pass
+        
+        self._check_landing()
+
+        
+
 
 
     def check(self):
         self._check_game_over()
-        self._check_landing()
+        # self._check_landing()
         self._check_close()
         self._handle_events()
     
 
 
     def _evaluate_height(self, board):
-        print(f"\n\n{board}")
         heights = ROWS - np.array([np.argmax(board[:, col] != 0) if np.any(board[:, col] != 0) else board.shape[0] for col in range(board.shape[1])])
         return heights
     
@@ -302,7 +314,7 @@ class Game:
 
 
     def update(self):
-        self._timer_update()
+        # self._timer_update()
         self.clock.tick(240)
         self.sprites.update()
         self.surface.fill(WINDOW)
@@ -318,10 +330,13 @@ class Game:
 
     def play_step(self):
 
-        self.get_next_states()
+        states = list(self.get_next_states().keys())[0]
+        pygame.time.delay(100)
         self.check()        
+        if states:
+            self.placeholder(states)
         self.update()
-        self.clock.tick()
+        
         if self.user_mode is not True:
             # return self.get_game_information()
             pass
@@ -331,6 +346,7 @@ class Game:
         while(True):
             self.play_step()
             if self.game_over: 
+                pygame.time.delay(10000)
                 pygame.quit()
                 sys.exit(0)
 
