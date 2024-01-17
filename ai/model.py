@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch import optim
+import os
 
 
 def _create_weights(m):
@@ -25,6 +26,14 @@ class Model(nn.Module):
         x=self.seq3(x)
         
         return x
+    
+    def save(self, file_name='model.pth'):
+        model_folder_path = './model'
+        if not os.path.exists(model_folder_path):
+            os.makedirs(model_folder_path)
+
+        file_name = os.path.join(model_folder_path, file_name)
+        torch.save(self.state_dict(), file_name)
 
 class Trainer:
     def __init__(self, model, lr, gamma):

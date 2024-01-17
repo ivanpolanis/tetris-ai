@@ -77,16 +77,18 @@ def train():
 
         if game_over:
             # train long memory, plot result
-            env.reset()
             agent.n_games += 1
             agent.train_long_memory()
-            if score > record:
-                record = score
-                agent.model.save()
+            score = env.score
+            if env.score > record:
+                record = env.score
+                agent.trainer.model.save()
             print('Game', agent.n_games, 'Score', score, 'Record:', record)
+            env.reset()
             plot_scores.append(score)
             total_score += score
             mean_score = total_score / agent.n_games
+            score = 0
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
 
