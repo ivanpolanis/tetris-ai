@@ -217,7 +217,7 @@ class Game:
         piece_id = self.cur_tetromino.type
         cur_piece: Tetromino = self.cur_tetromino
         num_rotations: int = 4
-        if piece_id == "O":  # O piece
+        if piece_id == "O": 
             num_rotations = 1
         elif ["S","Z","I"].__contains__(piece_id):
             num_rotations = 2
@@ -225,8 +225,6 @@ class Game:
         for rotation in range(num_rotations):            
             min_y = int(min([block.pos.y for block in cur_piece.blocks]))
             max_y = int(max([block.pos.y for block in cur_piece.blocks]))
-
-            valid_ys = COLUMNS - int(max_y - min_y)
 
             for y in range(-min_y, COLUMNS - max_y):
                 pos = Vector2(0, y)
@@ -252,9 +250,10 @@ class Game:
 
 
 
-    def get_state_properties(self, board):
-        board = np.array(self.board)
-        board = np.where(np.vectorize(lambda x: isinstance(x, Block) or x==1)(board), 1, board)
+    def get_state_properties(self, board = None):
+        if board is None:
+            board = np.array(self.board)
+            board = np.where(np.vectorize(lambda x: isinstance(x, Block) or x==1)(board), 1, board)
         heights = self._evaluate_height(board)
         bumpiness = self._evaluate_bumpiness(heights)
         holes = self._evaluate_holes(board)
@@ -333,7 +332,6 @@ class Game:
 
 
     def play_step(self, move=(0,0)):
-        
         self.check()
         self.play_move(move)
         self.update()
@@ -357,10 +355,8 @@ class Game:
     # def run(self):
     #     while(True):
     #         self.play_step()
-            # if self.game_over: 
-            #     pygame.time.delay(10000)
-            #     pygame.quit()
-            #     sys.exit(0)
+    #         if self.game_over: 
+    #             self.reset()
 
 
 
