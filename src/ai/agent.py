@@ -6,7 +6,6 @@ from tetris.settings import *
 import random
 from ai.model import *
 from ai.helper import *
-from tetris.game import Game
 
 
 class Agent:
@@ -68,13 +67,12 @@ class Agent:
 
 
 
-def train():
+def train(env):
     #TODO: setear todo
     plot_scores = []
     plot_mean_scores = []
     score, record, total_score = 0, 0, 0
     agent = Agent()
-    env =  Game()
     while(True):
         states = env.get_next_states()
         action, best_state = agent.get_best_state(states)

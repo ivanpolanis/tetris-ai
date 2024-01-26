@@ -45,6 +45,7 @@ class Tetromino(pygame.sprite.Sprite):
             self.landing = True
         return False
 
+
     #return True if there's collision
     def _check_collision(self, block_positions) -> bool:
         return any(map(lambda block, pos: block.check_collision(pos, self.board), self.blocks, block_positions))

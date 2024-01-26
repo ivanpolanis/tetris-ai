@@ -10,10 +10,11 @@ from tetris.settings import *
 from tetris.ui.board import Board
 from tetris.ui.score import Score
 from tetris.ui.preview import Preview
+from tetris.ui.pregame import Pregame
+from ai.agent import train
 import numpy as np
 from pygame import Vector2
 import sys
-
 from ai.ai_settings import *
 
 
@@ -28,8 +29,12 @@ class Game:
         self.surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         self.display_surface = pygame.display.get_surface()     
         
+        # Pregame Window
+        self.pregame_ui = Pregame(screen = self.surface, clock = self.clock)
+        self.user_mode = self.pregame_ui.run()
 
-        # UI and pygame
+
+        # UI and Pygame
         pygame.init()
         self.board_ui = Board()
         self.preview_ui = Preview()
@@ -44,7 +49,12 @@ class Game:
         pygame.mixer.music.set_volume(0)
         
         self._init_game()
-        
+
+        if(self.user_mode):
+            self._run_in_user_mode()
+        else:
+            train(self)
+
 
     def _move(self):
         self.cur_tetromino.update()
@@ -262,8 +272,7 @@ class Game:
 
 
 
-    def play_move(self, data): #mateo ponele nombre
-        # Rotamos la pieza
+    def play_move(self, data): 
         for i in range(data[1] - 1):
             self.cur_tetromino.rotate(ROTATE_DIRECTION["clockwise"])
         
@@ -277,9 +286,9 @@ class Game:
 
     def check(self):
         self._check_game_over()
-        # self._check_landing()
+        self._check_landing()
         self._check_close()
-        # self._handle_events()
+        self._handle_events()
     
 
 
@@ -317,7 +326,7 @@ class Game:
 
 
     def update(self):
-        # self._timer_update()
+        self._timer_update()
         self.clock.tick(240)
         self.sprites.update()
         self.surface.fill(WINDOW)
@@ -339,9 +348,16 @@ class Game:
         return self.get_reward(), self.game_over
 
 
+    def _run_in_user_mode(self):
+        while(True):
+            self.check()        
+            self.update()
+            self.clock.tick()
 
 
-    def get_reward(self): #No confirmo que esto este bien (G. Blasco, lease gei blascou)
+
+
+    def get_reward(self): 
         board = np.array(self.board)
         board = np.where(np.vectorize(lambda x: isinstance(x, Block))(board), 1, board)
         heights = self._evaluate_height(board)
