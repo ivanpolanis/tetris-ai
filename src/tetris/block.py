@@ -59,7 +59,6 @@ class Block(pygame.sprite.Sprite):
         if(not self.check_collision(self.pos + direction, board)):
             self.pos += direction
             return True
-        
         return False
 
 

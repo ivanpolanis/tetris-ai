@@ -62,7 +62,7 @@ UNCHOSEN_OPTION_COLOR = '#902bc6'
 START_BUTTON_COLOR = '#2A801A'
 
 #TETROMINOS
-INIT_POS_OFFSET = pygame.math.Vector2(0,COLUMNS//2 -1 )
+INIT_POS_OFFSET = pygame.math.Vector2(0,COLUMNS//2 -1)
 TETROMINOS={
   # 'I': {'shape': [(0,0), (0,-1), (0,1), (0,2),(0,3),(0,4),(0,-2),(0,-3),(0,-4)], 'color': join('.','src','tetris','assets',,'color_blocks''aqua_green.png')},
 	'T': {'shape': [(0,0), (-1,0), (1,0), (0,-1)], 'color': join('.','src','tetris','assets','color_blocks','purple.png')},
@@ -73,3 +73,10 @@ TETROMINOS={
 	'S': {'shape': [(0,0), (0,-1), (-1,0), (-1,1)], 'color': join('.','src','tetris','assets','color_blocks','green.png')},
 	'Z': {'shape': [(0,0), (0,1), (-1,0), (-1,-1)], 'color': join('.','src','tetris','assets','color_blocks','red.png')}
 }
+
+
+
+# Pregame settings
+
+BLOCK_FALL_SPEED = 5
+BLOCK_CREATION_INTERVAL = 500

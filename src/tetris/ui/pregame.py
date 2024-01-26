@@ -1,7 +1,13 @@
 import pygame
 from tetris.ui.switch import Switch
 from tetris.settings import *
+import random
 
+
+
+def create_new_block(sprites):
+    new_block = Pregame_Block(random.choice(list(TETROMINOS.keys())), sprites)
+    sprites.add(new_block)
 
 class Pregame:
     def __init__(self, screen, clock):
@@ -28,16 +34,16 @@ class Pregame:
     def _draw_elements(self):
         pygame.draw.rect(self.screen, pygame.Color(PREGAME_BACKGROUND), (0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
         
+        current_time = pygame.time.get_ticks()
+        if current_time % BLOCK_CREATION_INTERVAL == 0:
+            create_new_block(self.block_group)
+        self.block_group.draw(self.screen)
+
         title_image = pygame.image.load(TITLE_PATH)
         title_rect = title_image.get_rect()
         title_rect.center = (WINDOW_WIDTH/2, 150)
         self.screen.blit(title_image, title_rect)
 
-        # font = pygame.font.Font(FONT, 90)  
-        # self.title_text = font.render("TETRIS", True, WHITE)  
-        # title_rect = self.title_text.get_rect(topleft=(WINDOW_WIDTH/2 - 210, 50))
-        # self.screen.blit(self.title_text, title_rect)
-        
         
         #Start Game
         font = pygame.font.Font(FONT, 20)
@@ -51,8 +57,10 @@ class Pregame:
         self.switch.draw()
 
 
-    def run(self) -> int:
+    def run(self) -> bool:
+        self.block_group = pygame.sprite.Group()
         while self.waiting_for_start:
+            self.block_group.update()
             self._draw_elements()
             self._handle_events()
             pygame.display.flip()
@@ -62,3 +70,17 @@ class Pregame:
 
 
 
+class Pregame_Block(pygame.sprite.Sprite):
+    def __init__(self, tetromino_key, sprites):
+        super().__init__()
+        self.sprites = sprites
+        self.image = pygame.image.load(TETROMINOS[tetromino_key]['color']).convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, WINDOW_WIDTH - BLOCK_SIZE)
+        self.rect.y = -BLOCK_SIZE
+
+    def update(self):
+        self.rect.y += BLOCK_FALL_SPEED
+        if self.rect.y > WINDOW_HEIGHT:
+            self.kill()
+            create_new_block(self.sprites)
