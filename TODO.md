@@ -6,8 +6,8 @@
 
 ## AI
 
-- Crear una clase que recolecte informacion del board y la informacion de la pieza actual.
+- Guardar
+- Codigo agnostico
 
-- - Agujeros
-- - Lineas a completar
-- - Alturas de las columnas
+- Multiples robots en simultaneo
+- - Se elija el mejor modelo para continuar
